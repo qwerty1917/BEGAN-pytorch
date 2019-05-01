@@ -302,7 +302,7 @@ class BEGAN(object):
 
     def interpolation(self, z1, z2, n_step=10):
         self.set_mode('eval')
-        filename = self.output_dir.joinpath('interpolation'+':'+str(self.global_iter)+'.png')
+        filename = self.output_dir.joinpath('interpolation'+':'+str(self.global_iter)+'.jpg')
 
         step_size = (z2-z1)/(n_step+1)
         buff = z1
