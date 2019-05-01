@@ -146,3 +146,4 @@ pip-selfcheck.json
 checkpoint/
 data/
 output/
+.idea/
