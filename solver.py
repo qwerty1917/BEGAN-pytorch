@@ -302,7 +302,7 @@ class BEGAN(object):
 
     def interpolation(self, z1, z2, n_step=10):
         self.set_mode('eval')
-        filename = self.output_dir.joinpath('interpolation'+':'+str(self.global_iter)+'.jpg')
+        filename = self.output_dir.joinpath('interpolation'+':'+str(self.global_iter)+'.png')
 
         step_size = (z2-z1)/(n_step+1)
         buff = z1
@@ -312,6 +312,9 @@ class BEGAN(object):
         buff = torch.cat([buff, z2], dim=0)
 
         samples = self.unscale(self.G(buff))
+        samples = 255*(samples - torch.min(samples))/(torch.max(samples) - torch.min(samples))
+        samples = samples.int()
+
         grid = make_grid(samples.data.cpu(), nrow=n_step+2, padding=1, pad_value=0, normalize=False)
         save_image(grid, filename=filename)
         if self.visdom:
