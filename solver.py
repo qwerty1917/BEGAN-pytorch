@@ -281,7 +281,7 @@ class BEGAN(object):
                                                     win=self.win_moc,
                                                     update='append')
 
-                if self.global_iter%10 == 0:
+                if self.global_iter%100 == 0:
                     print()
                     print('iter:{:d}, M:{:.3f}'.format(self.global_iter, M_global[0]))
                     print('D_loss_real:{:.3f}, D_loss_fake:{:.3f}, G_loss:{:.3f}'.format(
