@@ -236,7 +236,7 @@ class BEGAN(object):
                 self.Kt = max(min(self.Kt + self.lambda_k*balance, 1.0), 0.0)
 
                 # Visualize process
-                if self.visdom and self.global_iter%1000 == 0:
+                if self.visdom and self.global_iter%10 == 0:
                     self.viz_train_samples.images(
                         self.unscale(x_fake).data.cpu(),
                         opts=dict(title='x_fake:{:d}'.format(self.global_iter)))
@@ -281,7 +281,7 @@ class BEGAN(object):
                                                     win=self.win_moc,
                                                     update='append')
 
-                if self.global_iter%1000 == 0:
+                if self.global_iter%10 == 0:
                     print()
                     print('iter:{:d}, M:{:.3f}'.format(self.global_iter, M_global[0]))
                     print('D_loss_real:{:.3f}, D_loss_fake:{:.3f}, G_loss:{:.3f}'.format(
