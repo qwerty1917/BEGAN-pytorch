@@ -1,11 +1,12 @@
 """solver.py"""
 
-import time
+import time, os
 from pathlib import Path
 
 import visdom
 import torch
 import torch.optim as optim
+from torch import nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
@@ -14,6 +15,10 @@ from torchvision.utils import make_grid, save_image
 from utils import cuda
 from models.model import Discriminator, Generator
 from datasets import return_data
+
+# os.environ['http_proxy'] = '' 
+os.environ["CUDA_x_ORDER"]="PCI_BUS_ID"   
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
 
 
 class BEGAN(object):
@@ -78,6 +83,9 @@ class BEGAN(object):
         #self.G_optim_scheduler = lr_scheduler.ExponentialLR(self.G_optim, gamma=0.97)
         self.D_optim_scheduler = lr_scheduler.StepLR(self.D_optim, step_size=1, gamma=0.5)
         self.G_optim_scheduler = lr_scheduler.StepLR(self.G_optim, step_size=1, gamma=0.5)
+        
+#         self.D = nn.DataParallel(self.D)
+#         self.G = nn.DataParallel(self.G)
 
         if not self.ckpt_dir.exists():
             self.ckpt_dir.mkdir(parents=True, exist_ok=True)
@@ -224,9 +232,8 @@ class BEGAN(object):
                 self.G_optim.step()
 
                 # Kt update
-                balance = (self.gamma*D_loss_real - D_loss_fake).data[0]
+                balance = (self.gamma*D_loss_real - D_loss_fake).data
                 self.Kt = max(min(self.Kt + self.lambda_k*balance, 1.0), 0.0)
-
 
                 # Visualize process
                 if self.visdom and self.global_iter%1000 == 0:
@@ -251,9 +258,13 @@ class BEGAN(object):
 
                 if self.visdom and self.global_iter%self.timestep == 0:
                     # Measure of Convergence
-                    M_global = (D_loss_real.data + abs(balance)).cpu()
+                    M_global = (D_loss_real.data + abs(balance)).unsqueeze(0).cpu()
+#                     print(M_global) # tensor([0.3243])
+#                     print(M_global.shape) # torch.Size([1])
 
                     X = torch.Tensor([self.global_iter])
+#                     print(X) # tensor([200.])
+#                     print(X.shape) # torch.Size([1])
                     if self.win_moc is None:
                         self.win_moc = self.viz_train_curves.line(
                                                     X=X,
@@ -274,9 +285,9 @@ class BEGAN(object):
                     print()
                     print('iter:{:d}, M:{:.3f}'.format(self.global_iter, M_global[0]))
                     print('D_loss_real:{:.3f}, D_loss_fake:{:.3f}, G_loss:{:.3f}'.format(
-                        D_loss_real.data[0],
-                        D_loss_fake.data[0],
-                        G_loss.data[0]))
+                        D_loss_real.data,
+                        D_loss_fake.data,
+                        G_loss.data))
 
                 if self.global_iter%self.lr_step_size == 0:
                     self.scheduler_step()
