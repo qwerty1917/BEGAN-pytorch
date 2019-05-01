@@ -39,7 +39,7 @@ def base_decoder_block(_type, n_filter=128, n_repeat=2):
                 layers.append(nn.Conv2d(n_filter, n_filter, 3, 1, 1))
                 layers.append(nn.ELU(True))
             else:
-                layers.append(nn.Conv2d(n_filter, 3, 3, 1, 1))
+                layers.append(nn.Conv2d(n_filter, 1, 3, 1, 1))
                 layers.append(nn.Tanh())
 
     else:
@@ -55,7 +55,7 @@ def base_encoder_block(_type, n_filter=128, n_repeat=2, inter_scale=1):
     if _type == 'front':
         for i in range(n_repeat):
             if i == 0:
-                layers.append(nn.Conv2d(3, n_filter, 3, 1, 1))
+                layers.append(nn.Conv2d(1, n_filter, 3, 1, 1))
                 layers.append(nn.ELU(True))
             else:
                 layers.append(nn.Conv2d(n_filter, n_filter, 3, 1, 1))
