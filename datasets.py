@@ -21,12 +21,19 @@ def return_data(args):
     if not is_power_of_2(image_size) or image_size < 32:
         raise ValueError('image size should be 32, 64, 128, ...')
 
-    transform = transforms.Compose([
-        transforms.Resize((image_size, image_size)),
-        transforms.Grayscale(num_output_channels=1),
-        transforms.ToTensor(),
-        transforms.Normalize([0.5]*args.channel, [0.5]*args.channel),
-    ])
+    if args.channel == 1:
+        transform = transforms.Compose([
+            transforms.Resize((image_size, image_size)),
+            transforms.Grayscale(num_output_channels=1),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5], [0.5]),
+        ])
+    else:
+        transform = transforms.Compose([
+            transforms.Resize((image_size, image_size)),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5] * args.channel, [0.5] * args.channel),
+        ])
 
     if name.lower() == 'cifar10':
         root = Path(dset_dir).joinpath('CIFAR10')
