@@ -61,14 +61,15 @@ class BEGAN(object):
         # Dataset
         self.dataset = args.dataset
         self.data_loader = return_data(args)
+        self.input_channel = args.channel
 
         self.lr_step_size = len(self.data_loader['train'].dataset)//self.batch_size*self.epoch//8
 
     def model_init(self):
         self.D = Discriminator(self.model_type, self.image_size,
-                               self.hidden_dim, self.n_filter, self.n_repeat)
+                               self.hidden_dim, self.n_filter, self.n_repeat, input_channel=self.input_channel)
         self.G = Generator(self.model_type, self.image_size,
-                           self.hidden_dim, self.n_filter, self.n_repeat)
+                           self.hidden_dim, self.n_filter, self.n_repeat, input_channel=self.input_channel)
 
         self.D = cuda(self.D, self.cuda)
         self.G = cuda(self.G, self.cuda)

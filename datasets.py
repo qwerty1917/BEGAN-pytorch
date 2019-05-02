@@ -25,7 +25,7 @@ def return_data(args):
         transforms.Resize((image_size, image_size)),
         transforms.Grayscale(num_output_channels=1),
         transforms.ToTensor(),
-        transforms.Normalize([0.5], [0.5]),
+        transforms.Normalize([0.5]*args.channel, [0.5]*args.channel),
     ])
 
     if name.lower() == 'cifar10':

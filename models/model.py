@@ -7,33 +7,33 @@ import models.model_skip as skip
 import models.model_skip_repeat as skip_repeat
 
 
-def encoder(_type, image_size, hidden_dim, n_filter, n_repeat):
+def encoder(_type, image_size, hidden_dim, n_filter, n_repeat, input_channel):
     if _type == 'simple':
         return simple.Encoder(image_size, hidden_dim, n_filter, n_repeat)
     elif _type == 'skip':
         return skip.Encoder(image_size, hidden_dim, n_filter, n_repeat)
     elif _type == 'skip_repeat':
-        return skip_repeat.Encoder(image_size, hidden_dim, n_filter, n_repeat)
+        return skip_repeat.Encoder(image_size, hidden_dim, n_filter, n_repeat, input_channel)
     else:
         return None
 
 
-def decoder(_type, image_size, hidden_dim, n_filter, n_repeat):
+def decoder(_type, image_size, hidden_dim, n_filter, n_repeat, input_channel):
     if _type == 'simple':
         return simple.Decoder(image_size, hidden_dim, n_filter, n_repeat)
     elif _type == 'skip':
         return skip.Decoder(image_size, hidden_dim, n_filter, n_repeat)
     elif _type == 'skip_repeat':
-        return skip_repeat.Decoder(image_size, hidden_dim, n_filter, n_repeat)
+        return skip_repeat.Decoder(image_size, hidden_dim, n_filter, n_repeat, input_channel)
     else:
         return None
 
 
 class Discriminator(nn.Module):
-    def __init__(self, _type, image_size, hidden_dim, n_filter, n_repeat):
+    def __init__(self, _type, image_size, hidden_dim, n_filter, n_repeat, input_channel):
         super(Discriminator, self).__init__()
-        self.encode = encoder(_type, image_size, hidden_dim, n_filter, n_repeat)
-        self.decode = decoder(_type, image_size, hidden_dim, n_filter, n_repeat)
+        self.encode = encoder(_type, image_size, hidden_dim, n_filter, n_repeat, input_channel)
+        self.decode = decoder(_type, image_size, hidden_dim, n_filter, n_repeat, input_channel)
 
     def weight_init(self, mean, std):
         self.encode.weight_init(mean, std)
@@ -47,9 +47,9 @@ class Discriminator(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, _type, image_size, hidden_dim, n_filter, n_repeat):
+    def __init__(self, _type, image_size, hidden_dim, n_filter, n_repeat, input_channel):
         super(Generator, self).__init__()
-        self.decode = decoder(_type, image_size, hidden_dim, n_filter, n_repeat)
+        self.decode = decoder(_type, image_size, hidden_dim, n_filter, n_repeat, input_channel)
 
     def weight_init(self, mean, std):
         self.decode.weight_init(mean, std)

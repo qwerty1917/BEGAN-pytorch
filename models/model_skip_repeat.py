@@ -14,7 +14,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-def base_decoder_block(_type, n_filter=128, n_repeat=2):
+def base_decoder_block(_type, n_filter=128, n_repeat=2, input_channel=3):
     layers = []
     if _type == 'front':
         for i in range(n_repeat):
@@ -39,7 +39,7 @@ def base_decoder_block(_type, n_filter=128, n_repeat=2):
                 layers.append(nn.Conv2d(n_filter, n_filter, 3, 1, 1))
                 layers.append(nn.ELU(True))
             else:
-                layers.append(nn.Conv2d(n_filter, 1, 3, 1, 1))
+                layers.append(nn.Conv2d(n_filter, input_channel, 3, 1, 1))
                 layers.append(nn.Tanh())
 
     else:
@@ -48,14 +48,14 @@ def base_decoder_block(_type, n_filter=128, n_repeat=2):
     return layers
 
 
-def base_encoder_block(_type, n_filter=128, n_repeat=2, inter_scale=1):
+def base_encoder_block(_type, n_filter=128, n_repeat=2, inter_scale=1, input_channel=3):
     m = inter_scale
 
     layers = []
     if _type == 'front':
         for i in range(n_repeat):
             if i == 0:
-                layers.append(nn.Conv2d(1, n_filter, 3, 1, 1))
+                layers.append(nn.Conv2d(input_channel, n_filter, 3, 1, 1))
                 layers.append(nn.ELU(True))
             else:
                 layers.append(nn.Conv2d(n_filter, n_filter, 3, 1, 1))
@@ -86,7 +86,7 @@ def base_encoder_block(_type, n_filter=128, n_repeat=2, inter_scale=1):
 
 
 class Decoder(nn.Module):
-    def __init__(self, image_size, hidden_dim=64, n_filter=128, n_repeat=2):
+    def __init__(self, image_size, hidden_dim=64, n_filter=128, n_repeat=2, input_channel=3):
         super(Decoder, self).__init__()
         self.image_size = image_size
         self.n_upsample = int(log2(image_size//8))
@@ -98,13 +98,13 @@ class Decoder(nn.Module):
         self.convs = dict()
         for i in range(self.n_upsample+2):
             if i == 0:
-                self.convs[i] = nn.Sequential(*base_decoder_block('front', n_filter, n_repeat))
+                self.convs[i] = nn.Sequential(*base_decoder_block('front', n_filter, n_repeat, input_channel=input_channel))
                 self.add_module(name='front', module=self.convs[i])
             elif i <= self.n_upsample:
-                self.convs[i] = nn.Sequential(*base_decoder_block('inter', n_filter, n_repeat))
+                self.convs[i] = nn.Sequential(*base_decoder_block('inter', n_filter, n_repeat, input_channel=input_channel))
                 self.add_module(name='inter'+str(i), module=self.convs[i])
             else:
-                self.convs[i] = nn.Sequential(*base_decoder_block('end', n_filter, n_repeat))
+                self.convs[i] = nn.Sequential(*base_decoder_block('end', n_filter, n_repeat, input_channel=input_channel))
                 self.add_module(name='end', module=self.convs[i])
 
 
@@ -133,7 +133,7 @@ class Decoder(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, image_size, hidden_dim=64, n_filter=128, n_repeat=2):
+    def __init__(self, image_size, hidden_dim=64, n_filter=128, n_repeat=2, input_channel=3):
         super(Encoder, self).__init__()
         self.image_size = image_size
         self.n_upsample = int(log2(self.image_size//8))
@@ -144,13 +144,13 @@ class Encoder(nn.Module):
         self.convs = dict()
         for i in range(self.n_upsample+2):
             if i == 0:
-                self.convs[i] = nn.Sequential(*base_encoder_block('front', self.n_filter, self.n_repeat))
+                self.convs[i] = nn.Sequential(*base_encoder_block('front', self.n_filter, self.n_repeat, input_channel=input_channel))
                 self.add_module('front', self.convs[i])
             elif i <= self.n_upsample:
-                self.convs[i] = nn.Sequential(*base_encoder_block('inter', self.n_filter, self.n_repeat, i))
+                self.convs[i] = nn.Sequential(*base_encoder_block('inter', self.n_filter, self.n_repeat, i, input_channel=input_channel))
                 self.add_module('inter'+str(i), self.convs[i])
             else:
-                self.convs[i] = nn.Sequential(*base_encoder_block('end', self.n_filter, self.n_repeat, i))
+                self.convs[i] = nn.Sequential(*base_encoder_block('end', self.n_filter, self.n_repeat, i, input_channel=input_channel))
                 self.add_module('end', self.convs[i])
 
         self.fc = nn.Linear(8*8*i*self.n_filter, self.hidden_dim)
