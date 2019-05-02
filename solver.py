@@ -86,8 +86,8 @@ class BEGAN(object):
         self.G_optim_scheduler = lr_scheduler.StepLR(self.G_optim, step_size=1, gamma=0.5)
 
         if self.cuda:
-            self.D = nn.DataParallel(self.D)
-            self.G = nn.DataParallel(self.G)
+            self.D = nn.DataParallel(self.D).cuda()
+            self.G = nn.DataParallel(self.G).cuda()
 
         if not self.ckpt_dir.exists():
             self.ckpt_dir.mkdir(parents=True, exist_ok=True)
