@@ -57,6 +57,7 @@ class BEGAN(object):
         self.ckpt_dir = Path(args.ckpt_dir).joinpath(args.env_name)
         self.load_ckpt = args.load_ckpt
         self.input_channel = args.channel
+        self.multi_gpu = args.multi_gpu
         self.model_init()
 
         # Dataset
@@ -85,7 +86,7 @@ class BEGAN(object):
         self.D_optim_scheduler = lr_scheduler.StepLR(self.D_optim, step_size=1, gamma=0.5)
         self.G_optim_scheduler = lr_scheduler.StepLR(self.G_optim, step_size=1, gamma=0.5)
 
-        if self.cuda:
+        if self.multi_gpu:
             self.D = nn.DataParallel(self.D).cuda()
             self.G = nn.DataParallel(self.G).cuda()
 

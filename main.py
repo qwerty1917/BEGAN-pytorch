@@ -61,6 +61,7 @@ if __name__ == "__main__":
     # Misc
     parser.add_argument('--seed', default=1, type=int, help='random seed number')
     parser.add_argument('--cuda', default=True, type=str2bool, help='enable cuda')
+    parser.add_argument('--multi_gpu', default=False, type=str2bool, help='enable multi gpu')
 
     args = parser.parse_args()
 
