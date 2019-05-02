@@ -56,12 +56,12 @@ class BEGAN(object):
         self.fixed_z = Variable(cuda(self.sample_z(self.sample_num), self.cuda))
         self.ckpt_dir = Path(args.ckpt_dir).joinpath(args.env_name)
         self.load_ckpt = args.load_ckpt
+        self.input_channel = args.channel
         self.model_init()
 
         # Dataset
         self.dataset = args.dataset
         self.data_loader = return_data(args)
-        self.input_channel = args.channel
 
         self.lr_step_size = len(self.data_loader['train'].dataset)//self.batch_size*self.epoch//8
 
