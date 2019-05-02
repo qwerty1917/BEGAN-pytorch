@@ -84,9 +84,10 @@ class BEGAN(object):
         #self.G_optim_scheduler = lr_scheduler.ExponentialLR(self.G_optim, gamma=0.97)
         self.D_optim_scheduler = lr_scheduler.StepLR(self.D_optim, step_size=1, gamma=0.5)
         self.G_optim_scheduler = lr_scheduler.StepLR(self.G_optim, step_size=1, gamma=0.5)
-        
-#         self.D = nn.DataParallel(self.D)
-#         self.G = nn.DataParallel(self.G)
+
+        if self.cuda:
+            self.D = nn.DataParallel(self.D)
+            self.G = nn.DataParallel(self.G)
 
         if not self.ckpt_dir.exists():
             self.ckpt_dir.mkdir(parents=True, exist_ok=True)
