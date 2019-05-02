@@ -98,13 +98,13 @@ class Decoder(nn.Module):
         self.convs = []
         for i in range(self.n_upsample+2):
             if i == 0:
-                self.convs[i].append(nn.Sequential(*base_decoder_block('front', n_filter, n_repeat, input_channel=input_channel)))
+                self.convs.append(nn.Sequential(*base_decoder_block('front', n_filter, n_repeat, input_channel=input_channel)))
                 self.add_module(name='front', module=self.convs[i])
             elif i <= self.n_upsample:
-                self.convs[i].append(nn.Sequential(*base_decoder_block('inter', n_filter, n_repeat, input_channel=input_channel)))
+                self.convs.append(nn.Sequential(*base_decoder_block('inter', n_filter, n_repeat, input_channel=input_channel)))
                 self.add_module(name='inter'+str(i), module=self.convs[i])
             else:
-                self.convs[i].append(nn.Sequential(*base_decoder_block('end', n_filter, n_repeat, input_channel=input_channel)))
+                self.convs.append(nn.Sequential(*base_decoder_block('end', n_filter, n_repeat, input_channel=input_channel)))
                 self.add_module(name='end', module=self.convs[i])
 
     def weight_init(self, mean, std):
