@@ -95,18 +95,17 @@ class Decoder(nn.Module):
         self.n_repeat = n_repeat
 
         self.fc = nn.Linear(self.hidden_dim, 8*8*self.n_filter)
-        self.convs = dict()
+        self.convs = []
         for i in range(self.n_upsample+2):
             if i == 0:
-                self.convs[i] = nn.Sequential(*base_decoder_block('front', n_filter, n_repeat, input_channel=input_channel))
+                self.convs[i].append(nn.Sequential(*base_decoder_block('front', n_filter, n_repeat, input_channel=input_channel)))
                 self.add_module(name='front', module=self.convs[i])
             elif i <= self.n_upsample:
-                self.convs[i] = nn.Sequential(*base_decoder_block('inter', n_filter, n_repeat, input_channel=input_channel))
+                self.convs[i].append(nn.Sequential(*base_decoder_block('inter', n_filter, n_repeat, input_channel=input_channel)))
                 self.add_module(name='inter'+str(i), module=self.convs[i])
             else:
-                self.convs[i] = nn.Sequential(*base_decoder_block('end', n_filter, n_repeat, input_channel=input_channel))
+                self.convs[i].append(nn.Sequential(*base_decoder_block('end', n_filter, n_repeat, input_channel=input_channel)))
                 self.add_module(name='end', module=self.convs[i])
-
 
     def weight_init(self, mean, std):
         for m in self._modules:
@@ -141,16 +140,16 @@ class Encoder(nn.Module):
         self.n_filter = n_filter
         self.n_repeat = n_repeat
 
-        self.convs = dict()
+        self.convs = []
         for i in range(self.n_upsample+2):
             if i == 0:
-                self.convs[i] = nn.Sequential(*base_encoder_block('front', self.n_filter, self.n_repeat, input_channel=input_channel))
+                self.convs.append(nn.Sequential(*base_encoder_block('front', self.n_filter, self.n_repeat, input_channel=input_channel)))
                 self.add_module('front', self.convs[i])
             elif i <= self.n_upsample:
-                self.convs[i] = nn.Sequential(*base_encoder_block('inter', self.n_filter, self.n_repeat, i, input_channel=input_channel))
+                self.convs.append(nn.Sequential(*base_encoder_block('inter', self.n_filter, self.n_repeat, i, input_channel=input_channel)))
                 self.add_module('inter'+str(i), self.convs[i])
             else:
-                self.convs[i] = nn.Sequential(*base_encoder_block('end', self.n_filter, self.n_repeat, i, input_channel=input_channel))
+                self.convs.append(nn.Sequential(*base_encoder_block('end', self.n_filter, self.n_repeat, i, input_channel=input_channel)))
                 self.add_module('end', self.convs[i])
 
         self.fc = nn.Linear(8*8*i*self.n_filter, self.hidden_dim)
@@ -161,7 +160,7 @@ class Encoder(nn.Module):
 
     def forward(self, image):
         out = self.convs[0](image)
-        for i in range(1, len(self.convs.keys())):
+        for i in range(1, len(self.convs)):
             out = self.convs[i](out)
 
         out = out.view(out.size(0), -1)
