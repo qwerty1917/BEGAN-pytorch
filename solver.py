@@ -201,6 +201,14 @@ class BEGAN(object):
             e_elapsed = time.time()
 
             for idx, (images, labels) in enumerate(self.data_loader['train']):
+                ######## test block ########
+                tmp_sample_img = images[0]
+                print(tmp_sample_img.size())
+                print("mean: {}".format(torch.mean(tmp_sample_img)))
+                print("max: {}".format(torch.max(tmp_sample_img)))
+                print("min: {}".format(torch.min(tmp_sample_img)))
+                print("std: {}".format(tmp_sample_img.std()))
+                ######## test block ########
                 self.global_iter += 1
 
                 # Discriminator Training
