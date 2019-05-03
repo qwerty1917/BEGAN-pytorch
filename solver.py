@@ -204,7 +204,7 @@ class BEGAN(object):
     def train(self):
         self.set_mode('train')
         M_global = None
-        M_history = deque([], self.lr_step_size)
+        M_history = deque([], int(self.lr_step_size/self.timestep))
 
         for e in range(self.epoch):
             self.global_epoch += 1
