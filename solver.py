@@ -1,6 +1,7 @@
 """solver.py"""
 
 import time, os
+from collections import deque
 from pathlib import Path
 
 import visdom
@@ -11,6 +12,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
 from torchvision.utils import make_grid, save_image
+import numpy as np
 
 from utils import cuda
 from models.model import Discriminator, Generator
@@ -33,6 +35,7 @@ class BEGAN(object):
         self.batch_size = args.batch_size
         self.D_lr = args.D_lr
         self.G_lr = args.G_lr
+        self.lr_update_term = args.lr_update_term
         self.gamma = args.gamma
         self.lambda_k = args.lambda_k
         self.Kt = 0.0
@@ -64,7 +67,10 @@ class BEGAN(object):
         self.dataset = args.dataset
         self.data_loader = return_data(args)
 
-        self.lr_step_size = len(self.data_loader['train'].dataset)//self.batch_size*self.epoch//8
+        if self.lr_update_term == 0:
+            self.lr_step_size = len(self.data_loader['train'].dataset)//self.batch_size*self.epoch//8
+        else:
+            self.lr_step_size = args.lr_update_term
 
     def model_init(self):
         self.D = Discriminator(self.model_type, self.image_size,
@@ -198,6 +204,7 @@ class BEGAN(object):
     def train(self):
         self.set_mode('train')
         M_global = None
+        M_history = deque([], self.lr_step_size)
 
         for e in range(self.epoch):
             self.global_epoch += 1
@@ -271,6 +278,7 @@ class BEGAN(object):
                 if self.visdom and self.global_iter%self.timestep == 0:
                     # Measure of Convergence
                     M_global = (D_loss_real.data + abs(balance)).unsqueeze(0).cpu()
+                    M_history.append(M_global.item())
 #                     print(M_global) # tensor([0.3243])
 #                     print(M_global.shape) # torch.Size([1])
 
@@ -302,7 +310,9 @@ class BEGAN(object):
                         G_loss.data))
 
                 if self.global_iter%self.lr_step_size == 0:
-                    self.scheduler_step()
+                    if np.mean(M_history) < M_global:
+                        print("### lr update activated ###")
+                        self.scheduler_step()
 
 
             e_elapsed = (time.time()-e_elapsed)

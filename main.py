@@ -33,6 +33,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', default=16, type=int, help='batch size')
     parser.add_argument('--D_lr', default=1e-4, type=float, help='learning rate for the Discriminator')
     parser.add_argument('--G_lr', default=1e-4, type=float, help='learning rate for the Generator')
+    parser.add_argument('--lr_update_term', default=50, type=int, help='learning rate decaying(update) term')
     parser.add_argument('--gamma', default=0.5, type=float, help='equilibrium balance ratio')
     parser.add_argument('--lambda_k', default=0.001, type=float, help='the proportional gain of k')
 
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     parser.add_argument('--env_name', default='main', type=str, help='experiment name')
     parser.add_argument('--visdom', default=True, type=str2bool, help='enable visdom')
     parser.add_argument('--port', default=8097, type=int, help='visdom port number')
-    parser.add_argument('--timestep', default=200, type=int, help='visdom curve time step')
+    parser.add_argument('--timestep', default=10, type=int, help='visdom curve time step')
     parser.add_argument('--output_dir', default='output', type=str, help='image output directory')
 
     # Misc
