@@ -310,7 +310,7 @@ class BEGAN(object):
                         G_loss.data))
 
                 if self.global_iter%self.lr_step_size == 0:
-                    M_global_prev_mean_95 = 0.95 * np.mean(M_history)
+                    M_global_prev_mean_95 = 0.9999 * np.mean(M_history)
                     print("M_global_prev_mean: {}, current M_global: {}".format(M_global_prev_mean_95, M_global))
                     if M_global_prev_mean_95 < M_global:
                         print("### lr update activated ###")
