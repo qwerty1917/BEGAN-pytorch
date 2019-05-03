@@ -218,6 +218,7 @@ class BEGAN(object):
                 x_real = Variable(cuda(images, self.cuda))
                 D_real = self.D(x_real)
                 D_loss_real = torch.mean(torch.abs(F.l1_loss(D_real, x_real)))
+                print("D_loss_real size: {}".format(D_loss_real.size()))
 
                 z = self.sample_z()
                 z = Variable(cuda(z, self.cuda))
