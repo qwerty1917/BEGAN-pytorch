@@ -217,13 +217,13 @@ class BEGAN(object):
                 # Discriminator Training
                 x_real = Variable(cuda(images, self.cuda))
                 D_real = self.D(x_real)
-                D_loss_real = F.l1_loss(D_real, x_real)
+                D_loss_real = torch.mean(torch.abs(F.l1_loss(D_real, x_real)))
 
                 z = self.sample_z()
                 z = Variable(cuda(z, self.cuda))
                 x_fake = self.G(z)
                 D_fake = self.D(x_fake.detach())
-                D_loss_fake = F.l1_loss(D_fake, x_fake)
+                D_loss_fake = torch.mean(torch.abs(F.l1_loss(D_fake, x_fake)))
 
                 D_loss = D_loss_real - self.Kt*D_loss_fake
 
@@ -237,7 +237,7 @@ class BEGAN(object):
                 x_fake = self.G(z)
                 D_fake = self.D(x_fake)
 
-                G_loss = F.l1_loss(x_fake, D_fake)
+                G_loss = torch.mean(torch.abs(F.l1_loss(x_fake, D_fake)))
 
                 self.G_optim.zero_grad()
                 G_loss.backward()
