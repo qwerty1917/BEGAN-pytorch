@@ -150,8 +150,8 @@ class Theater(object):
 
         if ch > 1:
             for ch_i in range(ch):
-                np_img[ch_i, :top_end, :] = 0
-                np_img[ch_i, bottom_start:, :] = 0
+                np_img[:top_end, :, ch_i] = 0
+                np_img[bottom_start:, :, ch_i] = 0
         else:
             np_img[:top_end, :] = 0
             np_img[bottom_start:, :] = 0
