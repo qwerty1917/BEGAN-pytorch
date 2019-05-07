@@ -161,7 +161,7 @@ class Theater(object):
         return belted_img
 
     def __repr__(self):
-        return self.__class__.__name__ + '(mean={0})'.format(self.hide_range)
+        return self.__class__.__name__ + '(hide_range={0})'.format(self.hide_range)
 
 
 
@@ -173,6 +173,12 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, default='MNIST')
     parser.add_argument('--dset_dir', type=str, default='data')
     parser.add_argument('--batch_size', type=int, default=64)
+
+    # custom
+    parser.add_argument('--channel', default=3, type=int, help='input image channel')
+    parser.add_argument('--noise_mean', default=0, type=float, help='input image noise filter mean')
+    parser.add_argument('--noise_std', default=10, type=float, help='input image noise filter std')
+    parser.add_argument('--hide_range', default=0, type=float, help='Theater-hide range ratio')
     args = parser.parse_args()
 
     data_loader = return_data(args)
