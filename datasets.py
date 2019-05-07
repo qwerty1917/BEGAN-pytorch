@@ -107,7 +107,7 @@ class RandomNoise(object):
         np_noisy = np.clip(np_img + noise, 0, 255)
 
         # Convert numpy array to PUL image.
-        noisy = PIL.Image.fromarray(np.uint8(np_noisy))
+        noisy = PIL.Image.fromarray(np_noisy)
         return noisy
 
     def __repr__(self):
