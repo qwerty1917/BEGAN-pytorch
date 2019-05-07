@@ -23,6 +23,7 @@ def return_data(args):
     image_size = args.image_size
     noise_mean = args.noise_mean
     noise_std = args.noise_std
+    hide_range = args.hide_range
     if not is_power_of_2(image_size) or image_size < 32:
         raise ValueError('image size should be 32, 64, 128, ...')
 
@@ -31,6 +32,7 @@ def return_data(args):
             transforms.Resize((image_size, image_size)),
             transforms.Grayscale(num_output_channels=1),
             RandomNoise(mean=noise_mean, std=noise_std),
+            Theater(hide_range=hide_range),
             transforms.ToTensor(),
             transforms.Normalize([0.5], [0.5]),
         ])
@@ -38,6 +40,7 @@ def return_data(args):
         transform = transforms.Compose([
             transforms.Resize((image_size, image_size)),
             RandomNoise(mean=noise_mean, std=noise_std),
+            Theater(hide_range=hide_range),
             transforms.ToTensor(),
             transforms.Normalize([0.5] * args.channel, [0.5] * args.channel),
         ])
@@ -116,6 +119,50 @@ class RandomNoise(object):
 
     def __repr__(self):
         return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
+
+
+class Theater(object):
+    """Add black belt to both 15% top and 15% bottom, 30% of total image
+    
+    Args:
+        hide_range (float): ratio to hide with belt
+    
+    Return:
+        std (float): std of noise
+    """
+    def __init__(self, hide_range=0):
+        self.hide_range = hide_range
+
+    def __call__(self, img):
+        """
+        :param img: Image to add hiding filter 
+        :return: Theater belted image.
+        """
+
+        # Convert PIL image to numpy.
+        np_img = np.array(img)
+        img_h = img.size[1]
+        ch = len(img.getbands())
+
+        # Add belt.
+        top_end = int((img_h * self.hide_range)/2)
+        bottom_start = img_h - int((img_h * self.hide_range)/2)
+
+        if ch > 1:
+            for ch_i in range(ch):
+                np_img[ch_i, :top_end, :] = 0
+                np_img[ch_i, bottom_start:, :] = 0
+        else:
+            np_img[:top_end, :] = 0
+            np_img[bottom_start:, :] = 0
+
+        # Convert numpy array to PUL image.
+        belted_img = PIL.Image.fromarray(np_img.astype('uint8'))
+        return belted_img
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(mean={0})'.format(self.hide_range)
+
 
 
 if __name__ == '__main__':
