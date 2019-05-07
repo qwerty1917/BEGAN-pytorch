@@ -37,6 +37,7 @@ def return_data(args):
     else:
         transform = transforms.Compose([
             transforms.Resize((image_size, image_size)),
+            RandomNoise(mean=noise_mean, std=noise_std),
             transforms.ToTensor(),
             transforms.Normalize([0.5] * args.channel, [0.5] * args.channel),
         ])
