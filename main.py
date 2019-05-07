@@ -51,6 +51,8 @@ if __name__ == "__main__":
     parser.add_argument('--dataset', default='CIFAR10', type=str, help='CIFAR10, CelebA')
     parser.add_argument('--num_workers', default=1, type=int, help='num_workers for data loader')
     parser.add_argument('--channel', default=3, type=int, help='input image channel')
+    parser.add_argument('--noise_mean', default=0, type=float, help='input image noise filter mean')
+    parser.add_argument('--noise_std', default=10, type=float, help='input image noise filter std')
 
     # Visualization
     parser.add_argument('--env_name', default='main', type=str, help='experiment name')
