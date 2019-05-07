@@ -103,12 +103,10 @@ class RandomNoise(object):
         ch = len(img.getbands())
 
         # Add noise.
-        print(np_img.shape)
         if ch > 1:
             noise = np.random.normal(self.mean, self.std, (img_h, img_w, ch))
         else:
             noise = np.random.normal(self.mean, self.std, (img_h, img_w))
-        print(noise.shape)
         np_noisy = np.clip(np_img + noise, 0, 255)
 
         # Convert numpy array to PUL image.
