@@ -34,7 +34,7 @@ def return_data(args):
             RandomNoise(mean=noise_mean, std=noise_std),
             Theater(hide_range=hide_range),
             transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5]),
+            transforms.Normalize([0], [1]),
         ])
     else:
         transform = transforms.Compose([
@@ -42,7 +42,7 @@ def return_data(args):
             RandomNoise(mean=noise_mean, std=noise_std),
             Theater(hide_range=hide_range),
             transforms.ToTensor(),
-            transforms.Normalize([0.5] * args.channel, [0.5] * args.channel),
+            transforms.Normalize([0] * args.channel, [1] * args.channel),
         ])
 
     if name.lower() == 'cifar10':
