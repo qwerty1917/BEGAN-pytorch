@@ -104,7 +104,7 @@ class RandomNoise(object):
 
         # Add noise.
         noise = np.random.normal(self.mean, self.std, (img_h, img_w, ch))
-        np_noisy = min(max(np_img + noise, 0), 255)
+        np_noisy = np.clip(np_img + noise, 0, 255)
 
         # Convert numpy array to PUL image.
         noisy = PIL.Image.fromarray(np.uint8(np_noisy))
