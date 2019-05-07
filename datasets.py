@@ -104,7 +104,10 @@ class RandomNoise(object):
 
         # Add noise.
         print(np_img.shape)
-        noise = np.random.normal(self.mean, self.std, (img_h, img_w, ch))
+        if ch > 1:
+            noise = np.random.normal(self.mean, self.std, (img_h, img_w, ch))
+        else:
+            noise = np.random.normal(self.mean, self.std, (img_h, img_w))
         print(noise.shape)
         np_noisy = np.clip(np_img + noise, 0, 255)
 
