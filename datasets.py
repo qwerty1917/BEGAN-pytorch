@@ -195,17 +195,31 @@ class Checker(object):
 
         # Add checker
         half_intensity = self.checker_intensity//2
-        np_checker = np.zeros((img_h, img_w, ch))
-        np_checker_row_1 = np.zeros((img_w, ch))
-        np_checker_row_2 = np.zeros((img_w, ch))
+        if ch > 1:
+            np_checker = np.zeros((img_h, img_w, ch))
+            np_checker_row_1 = np.zeros((img_w, ch))
+            np_checker_row_2 = np.zeros((img_w, ch))
+        else:
+            np_checker = np.zeros((img_h, img_w))
+            np_checker_row_1 = np.zeros(img_w)
+            np_checker_row_2 = np.zeros(img_w)
+
         for col_i in range(img_w):
             if col_i % (self.checker_gap * 2) == 0:
-                np_checker_row_1[col_i:col_i+self.checker_gap, :] = half_intensity
-                np_checker_row_2[col_i:col_i+self.checker_gap, :] = half_intensity
+                if ch > 1:
+                    np_checker_row_1[col_i:col_i + self.checker_gap, :] = half_intensity
+                    np_checker_row_2[col_i:col_i + self.checker_gap, :] = half_intensity
+                else:
+                    np_checker_row_1[col_i:col_i + self.checker_gap] = half_intensity
+                    np_checker_row_2[col_i:col_i + self.checker_gap] = half_intensity
         for row_i in range(img_h):
-            np_checker[row_i, :, :] += (np_checker_row_1 + np_checker_row_2)
+            if ch > 1:
+                np_checker[row_i, :, :] += (np_checker_row_1 + np_checker_row_2)
+            else:
+                np_checker[row_i, :] += (np_checker_row_1 + np_checker_row_2)
             np_checker_row_1 = np.roll(np_checker_row_1, 1)
             np_checker_row_2 = np.roll(np_checker_row_2, -1)
+
         np_checkered = np.clip(np_img + np_checker, 0, 255)
 
         # Convert numpy array to PIL image.
