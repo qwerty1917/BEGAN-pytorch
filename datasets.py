@@ -205,7 +205,7 @@ class Checker(object):
         for row_i in range(img_h):
             np_checker[row_i, :, :] += (np_checker_row_1 + np_checker_row_2)
             np_checker_row_1 = np.roll(np_checker_row_1, 1)
-            np_checker_row_1 = np.roll(np_checker_row_1, -1)
+            np_checker_row_2 = np.roll(np_checker_row_2, -1)
         np_checkered = np.clip(np_img + np_checker, 0, 255)
 
         # Convert numpy array to PIL image.

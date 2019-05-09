@@ -255,7 +255,7 @@ class BEGAN(object):
                 self.Kt = max(min(self.Kt + self.lambda_k*balance, 1.0), 0.0)
 
                 # Visualize process
-                if self.visdom and self.global_iter%10 == 0:
+                if self.visdom and ((self.global_iter <= 1000 and self.global_iter%10 == 0) or self.global_iter%200 == 0):
                     self.viz_train_samples.images(
                         self.unscale(x_fake).data.cpu(),
                         opts=dict(title='x_fake:{:d}'.format(self.global_iter)))
@@ -269,7 +269,7 @@ class BEGAN(object):
                         self.unscale(D_real).data.cpu(),
                         opts=dict(title='D_real:{:d}'.format(self.global_iter)))
 
-                if self.visdom and self.global_iter%10 == 0:
+                if self.visdom and ((self.global_iter <= 1000 and self.global_iter % 10 == 0) or self.global_iter % 200 == 0):
                     self.interpolation(self.fixed_z[0:1], self.fixed_z[1:2])
                     self.sample_img('fixed')
                     self.sample_img('random')
