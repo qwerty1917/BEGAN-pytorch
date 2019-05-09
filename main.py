@@ -54,6 +54,8 @@ if __name__ == "__main__":
     parser.add_argument('--noise_mean', default=0, type=float, help='input image noise filter mean')
     parser.add_argument('--noise_std', default=10, type=float, help='input image noise filter std')
     parser.add_argument('--hide_range', default=0.4, type=float, help='Theater-hide range ratio')
+    parser.add_argument('--checker_gap', default=5, type=int, help='Checker gap')
+    parser.add_argument('--checker_intensity', default=0, type=int, help='Checker intensity')
 
     # Visualization
     parser.add_argument('--env_name', default='main', type=str, help='experiment name')

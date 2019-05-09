@@ -24,6 +24,8 @@ def return_data(args):
     noise_mean = args.noise_mean
     noise_std = args.noise_std
     hide_range = args.hide_range
+    checker_gap = args.checker_gap
+    checker_intensity = args.checker_intensity
     if not is_power_of_2(image_size) or image_size < 32:
         raise ValueError('image size should be 32, 64, 128, ...')
 
@@ -33,6 +35,7 @@ def return_data(args):
             transforms.Grayscale(num_output_channels=1),
             RandomNoise(mean=noise_mean, std=noise_std),
             Theater(hide_range=hide_range),
+            Checker(checker_gap=checker_gap, checker_intensity=checker_intensity),
             transforms.ToTensor(),
             transforms.Normalize([0.5], [0.5]),
         ])
@@ -41,6 +44,7 @@ def return_data(args):
             transforms.Resize((image_size, image_size)),
             RandomNoise(mean=noise_mean, std=noise_std),
             Theater(hide_range=hide_range),
+            Checker(checker_gap=checker_gap, checker_intensity=checker_intensity),
             transforms.ToTensor(),
             transforms.Normalize([0.5] * args.channel, [0.5] * args.channel),
         ])
@@ -128,7 +132,7 @@ class Theater(object):
         hide_range (float): ratio to hide with belt
     
     Return:
-        std (float): std of noise
+        PIL Image: noise added image.
     """
     def __init__(self, hide_range=0):
         self.hide_range = hide_range
@@ -156,12 +160,62 @@ class Theater(object):
             np_img[:top_end, :] = 0
             np_img[bottom_start:, :] = 0
 
-        # Convert numpy array to PUL image.
+        # Convert numpy array to PIL image.
         belted_img = PIL.Image.fromarray(np_img.astype('uint8'))
         return belted_img
 
     def __repr__(self):
         return self.__class__.__name__ + '(hide_range={0})'.format(self.hide_range)
+
+
+class Checker(object):
+    """Add checker pattern on image to prevent loss cherry picking
+    
+    Args:
+        checker_gap (int): pixel gap of checker pattern
+        checker_intensity (int): checker intensity (of most dark park of checker)
+    Return:
+        PIL Image: noise added image.
+    """
+    def __init__(self, checker_gap=5, checker_intensity=0):
+        self.checker_gap = checker_gap
+        self.checker_intensity = checker_intensity
+
+    def __call__(self, img):
+        """
+        :param img: Image to add checker pattern
+        :return: Image added checker pattern
+        """
+
+        # Convert PIL image to numpy.
+        np_img = np.array(img)
+        img_w = img.size[0]
+        img_h = img.size[1]
+        ch = len(img.getbands())
+
+        # Add checker
+        half_intensity = self.checker_intensity//2
+        np_checker = np.zeros((img_h, img_w, ch))
+        np_checker_row_1 = np.zeros((img_w, ch))
+        np_checker_row_2 = np.zeros((img_w, ch))
+        for col_i in range(img_w):
+            if col_i % (self.checker_gap * 2) == 0:
+                np_checker_row_1[col_i:col_i+self.checker_gap, :] = half_intensity
+                np_checker_row_2[col_i:col_i+self.checker_gap, :] = half_intensity
+        for row_i in range(img_h):
+            np_checker[row_i, :, :] += (np_checker_row_1 + np_checker_row_2)
+            np_checker_row_1 = np.roll(np_checker_row_1, 1)
+            np_checker_row_1 = np.roll(np_checker_row_1, -1)
+        np_checkered = np.clip(np_img + np_checker, 0, 255)
+
+        # Convert numpy array to PIL image.
+        checkered_img = PIL.Image.fromarray(np_checkered.astype('uint8'))
+
+        return checkered_img
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(checker_gap={0}, checker_intensity={1})'.format(self.checker_gap, self.checker_intensity)
+
 
 
 
