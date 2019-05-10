@@ -40,6 +40,7 @@ if __name__ == "__main__":
     parser.add_argument('--lr_update_term', default=30, type=int, help='learning rate decaying(update) term')
     parser.add_argument('--gamma', default=0.5, type=float, help='equilibrium balance ratio')
     parser.add_argument('--lambda_k', default=0.001, type=float, help='the proportional gain of k')
+    parser.add_argument('--critic_iters', default=5, type=int, help='update count of D while update G once')
 
     # Network
     parser.add_argument('--gan_type', default='began', type=str, help='GAN types : began, wgan')
