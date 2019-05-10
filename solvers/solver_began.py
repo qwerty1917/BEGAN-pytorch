@@ -1,22 +1,23 @@
 """solver.py"""
 
-import time, os
+import os
+import time
 from collections import deque
 from pathlib import Path
 
-import visdom
+import numpy as np
 import torch
-import torch.optim as optim
-from torch import nn
 import torch.nn.functional as F
+import torch.optim as optim
+import visdom
+from torch import nn
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
 from torchvision.utils import make_grid, save_image
-import numpy as np
 
-from utils import cuda
-from models.model import Discriminator, Generator
 from datasets import return_data
+from models.began.model import Discriminator, Generator
+from utils import cuda
 
 # os.environ['http_proxy'] = '' 
 os.environ["CUDA_x_ORDER"]="PCI_BUS_ID"   

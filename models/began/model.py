@@ -1,10 +1,10 @@
 """model.py"""
 
+import models.began.model_simple as simple
+import models.began.model_skip_repeat as skip_repeat
 import torch.nn as nn
 
-import models.model_simple as simple
-import models.model_skip as skip
-import models.model_skip_repeat as skip_repeat
+import models.began.model_skip as skip
 
 
 def encoder(_type, image_size, hidden_dim, n_filter, n_repeat, input_channel):

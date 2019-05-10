@@ -1,10 +1,11 @@
 """main.py"""
 import argparse
 
-import torch
 import numpy as np
+import torch
 
-from solver import BEGAN
+from solvers.solver_began import BEGAN
+from solvers.solver_wgan import WGAN
 from utils import str2bool
 
 
@@ -21,7 +22,10 @@ def main(args):
     np.set_printoptions(precision=4)
     torch.set_printoptions(precision=4)
 
-    net = BEGAN(args)
+    if args.gan_type == 'began':
+        net = BEGAN(args)
+    elif args.gan_type == 'wgan':
+        net = WGAN(args)
     net.train()
 
 
@@ -38,6 +42,7 @@ if __name__ == "__main__":
     parser.add_argument('--lambda_k', default=0.001, type=float, help='the proportional gain of k')
 
     # Network
+    parser.add_argument('--gan_type', default='began', type=str, help='GAN types : began, wgan')
     parser.add_argument('--model_type', default='skip_repeat', type=str, help='three types of models : simple, skip, skip_repeat')
     parser.add_argument('--n_filter', default=64, type=int, help='scaling unit of the number of filters')
     parser.add_argument('--n_repeat', default=2, type=int, help='repetition number of network layers')
