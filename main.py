@@ -34,6 +34,7 @@ if __name__ == "__main__":
 
     # Optimization
     parser.add_argument('--epoch', default=20, type=int, help='epoch size')
+    parser.add_argument('--generator_iters', default=10000, type=int, help='number of iteration for generator in WGAN')
     parser.add_argument('--batch_size', default=16, type=int, help='batch size')
     parser.add_argument('--D_lr', default=1e-4, type=float, help='learning rate for the Discriminator')
     parser.add_argument('--G_lr', default=1e-4, type=float, help='learning rate for the Generator')
@@ -51,6 +52,7 @@ if __name__ == "__main__":
     parser.add_argument('--load_ckpt', default=True, type=str2bool, help='load previous checkpoint')
     parser.add_argument('--ckpt_dir', default='checkpoint', type=str, help='weight directory')
     parser.add_argument('--image_size', default=32, type=int, help='image size')
+    parser.add_argument('--weight_clipping_limit', default=0.01, type=float, help='WGAN-CP clipping limit')
 
     # Dataset
     parser.add_argument('--dset_dir', default='data', type=str, help='dataset directory')

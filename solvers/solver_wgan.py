@@ -1,8 +1,10 @@
 import os
+from collections import deque
 from pathlib import Path
 
 import torch
 import visdom
+import time
 from torch import nn
 from torch.autograd import Variable
 from torchvision.utils import make_grid, save_image
@@ -24,6 +26,7 @@ class WGAN(object):
 
         # Optimization
         self.epoch = args.epoch
+        self.generator_iters = args.generator_iters
         self.batch_size = args.batch_size
         self.D_lr = args.D_lr
         self.G_lr = args.G_lr
@@ -46,6 +49,7 @@ class WGAN(object):
         self.load_ckpt = args.load_ckpt
         self.input_channel = args.channel
         self.multi_gpu = args.multi_gpu
+        self.weight_clipping_limit = args.weight_clipping_limit
         self.model_init()
 
         # Dataset
@@ -164,6 +168,58 @@ class WGAN(object):
         else:
             print("=> no checkpoint found at '{}'".format(file_path))
 
+    def get_infinite_batches(self, data_loader):
+        while True:
+            for i, (images, _) in enumerate(data_loader):
+                yield images
+
     def train(self):
-        # WGAN train WIP
-        pass
+        self.set_mode('train')
+
+        self.data = self.get_infinite_batches(self.data_loader['train'])
+
+        one = torch.FloatTensor([1])
+        mone = one * -1
+
+        if self.cuda:
+            one = one.cuda()
+            mone = mone.cuda()
+
+        for g_iter in range(self.generator_iters):
+
+            # Requires grad, Generator requires_grad = False
+            for p in self.D.parameters():
+                p.requires_grad = True
+
+            self.global_epoch += 1
+            e_elapsed = time.time()
+
+            for d_iter in range(self.critic_iters):
+                self.global_iter += 1
+                self.D.zero_grad()
+
+                # clamp parameters to a range [-c, c], c = weight_clipping_limit
+                for p in self.D.parameters():
+                    p.data.clamp_(-self.weight_clipping_limit, self.weight_clipping_limit)
+
+                images = self.data.__next__()
+                # Check for batch to have full batch_size
+                if images.size()[0] != self.batch_size:
+                    continue
+
+                # make random latent z
+                z = torch.rand((self.batch_size, 100, 1, 1))
+                if self.cuda:
+                    images, z = Variable(images.cuda()), Variable(z.cuda())
+                else:
+                    images, z = Variable(images), Variable(z)
+
+                #Discriminator Training
+                x_real = Variable(cuda(images, self.cuda))
+                D_loss_real = self.D(x_real)
+                D_loss_real = D_loss_real.mean(0).view(1)
+                D_loss_real.backward(one)
+
+                # TODO: github: line 166 / local began: line 230
+
+
