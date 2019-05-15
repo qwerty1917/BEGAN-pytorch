@@ -263,6 +263,7 @@ class WGAN(object):
             if self.cuda:
                 z = z.cuda()
 
+            print(z.size()) ## 삭제할거
             x_fake = self.G(z)
             G_loss = self.D(x_fake)
             G_loss = G_loss.mean(0).view(1)
