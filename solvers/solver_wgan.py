@@ -292,7 +292,7 @@ class WGAN(object):
                       format(Wasserstein_D.data[0], D_loss.data[0], G_cost.data[0], D_loss_real.data[0], D_loss_fake.data[0]))
 
             e_elapsed = (time.time() - e_elapsed)
-            print('epoch {:d}, [{:.2f}s]'.format(self.global_epoch, e_elapsed))
+            print('generator_iter {:d}, [{:.2f}s]'.format(self.generator_iter, e_elapsed))
 
     def interpolation(self, z1, z2, n_step=10):
         self.set_mode('eval')
