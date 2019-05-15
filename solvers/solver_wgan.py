@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 import visdom
 import time
-from torch import nn
+from torch import nn, optim
 from torch.autograd import Variable
 from torchvision.utils import make_grid, save_image
 
@@ -31,7 +31,7 @@ class WGAN(object):
         self.D_lr = args.D_lr
         self.G_lr = args.G_lr
         self.critic_iters = args.critic_iters
-        self.global_epoch = 0
+        self.generator_iter = 0
         self.global_iter = 0
 
         # Visualization
@@ -60,6 +60,12 @@ class WGAN(object):
         # TODO: WGAN model_init
         self.D = Discriminator(self.input_channel)
         self.G = Discriminator(self.input_channel)
+
+        self.D.weight_init(mean=0.0, std=0.02)
+        self.G.weight_init(mean=0.0, std=0.02)
+
+        self.D_optim = optim.RMSprop(self.D.parameters(), lr=self.D_lr)
+        self.G_optim = optim.RMSprop(self.G.parameters(), lr=self.G_lr)
 
         if self.cuda:
             self.D = cuda(self.D, self.cuda)
@@ -140,7 +146,7 @@ class WGAN(object):
         optim_states = {'G_optim': self.G_optim.state_dict(),
                         'D_optim': self.D_optim.state_dict()}
         states = {'iter': self.global_iter,
-                  'epoch': self.global_epoch,
+                  'g_iter': self.generator_iter,
                   'args': self.args,
                   'win_moc': self.win_moc,
                   'fixed_z': self.fixed_z.data.cpu(),
@@ -156,7 +162,7 @@ class WGAN(object):
         if file_path.is_file():
             checkpoint = torch.load(file_path.open('rb'))
             self.global_iter = checkpoint['iter']
-            self.global_epoch = checkpoint['epoch']
+            self.generator_iter = checkpoint['g_iter']
             self.win_moc = checkpoint['win_moc']
             self.fixed_z = checkpoint['fixed_z']
             self.fixed_z = Variable(cuda(self.fixed_z, self.cuda))
@@ -187,11 +193,12 @@ class WGAN(object):
 
         for g_iter in range(self.generator_iters):
 
+            ## Discriminator training
             # Requires grad, Generator requires_grad = False
             for p in self.D.parameters():
                 p.requires_grad = True
 
-            self.global_epoch += 1
+            self.generator_iter += 1
             e_elapsed = time.time()
 
             for d_iter in range(self.critic_iters):
@@ -207,19 +214,93 @@ class WGAN(object):
                 if images.size()[0] != self.batch_size:
                     continue
 
-                # make random latent z
-                z = torch.rand((self.batch_size, 100, 1, 1))
                 if self.cuda:
-                    images, z = Variable(images.cuda()), Variable(z.cuda())
+                    images = Variable(images.cuda())
                 else:
-                    images, z = Variable(images), Variable(z)
+                    images = Variable(images)
 
-                #Discriminator Training
+                # Discriminator Training with real image
                 x_real = Variable(cuda(images, self.cuda))
                 D_loss_real = self.D(x_real)
                 D_loss_real = D_loss_real.mean(0).view(1)
                 D_loss_real.backward(one)
 
                 # TODO: github: line 166 / local began: line 230
+                # Discriminator Training
+                z = Variable(torch.randn(self.batch_size, 100, 1, 1))
+                if self.cuda:
+                    z = z.cuda()
+                x_fake = self.G(z)
+                D_loss_fake = self.D(x_fake)
+                D_loss_fake = D_loss_fake.mean(0).view(1)
+                D_loss_fake.backward(mone)
+
+                D_loss = D_loss_fake - D_loss_real
+                Wasserstein_D = D_loss_real - D_loss_fake
+                self.D_optim.step()
+
+            ## Generator training
+            for p in self.D.parameters():
+                p.requires_grad = False
+
+            self.G.zero_grad()
+
+            # Generator update
+            # Compute loss with fake images
+            z = Variable(torch.randn(self.batch_size, 100, 1, 1))
+            if self.cuda:
+                z = z.cuda()
+
+            x_fake = self.G(z)
+            G_loss = self.D(x_fake)
+            G_loss = G_loss.mean(0).view(1)
+            G_loss.backward(one)
+            G_cost = -G_loss
+            self.G_optim.step()
+
+            # Visualize process
+            if self.visdom and ((self.global_iter <= 1000 and self.global_iter % 10 == 0) or self.global_iter % 200 == 0):
+                self.viz_train_samples.images(
+                    self.unscale(x_fake).data.cpu(),
+                    opts=dict(title='x_fake'))
+                self.viz_train_samples.images(
+                    self.unscale(x_real).data.cpu(),
+                    opts=dict(titls='x_real'))
+
+            if self.visdom and ((self.global_iter <= 1000 and self.global_iter % 10 == 0) or self.global_iter % 200 == 0):
+                self.interpolation(self.fixed_z[0:1], self.fixed_z[1:2])
+                self.sample_img('fixed')
+                self.sample_img('random')
+                self.save_checkpoint()
+
+            # console output
+            if self.global_iter % 10 == 0:
+                print('generator_iter:{:d}, global_iter:{:d}'.format(self.generator_iter, self.global_iter))
+                print('Wasserstein distance: {:.3f}, Loss D: {:.3f}, Loss G: {:.3f}, Loss D Real: {:.3f}, Loss D fake: {:.3f}'.
+                      format(Wasserstein_D.data[0], D_loss.data[0], G_cost.data[0], D_loss_real.data[0], D_loss_fake.data[0]))
+
+    def interpolation(self, z1, z2, n_step=10):
+        self.set_mode('eval')
+        filename = self.output_dir.joinpath('interpolation' + ':' + str(self.global_iter) + '.jpg')
+
+        step_size = (z2 - z1) / (n_step + 1)
+        buff = z1
+        for i in range(1, n_step + 1):
+            _next = z1 + step_size * (i)
+            buff = torch.cat([buff, _next], dim=0)
+        buff = torch.cat([buff, z2], dim=0)
+
+        samples = self.unscale(self.G(buff))
+
+        grid = make_grid(samples.data.cpu(), nrow=n_step + 2, padding=1, pad_value=0, normalize=False)
+        save_image(grid, filename=filename)
+        if self.visdom:
+            self.viz_interpolations.image(grid, opts=dict(title=str(filename), factor=2))
+
+        self.set_mode('train')
+
+
+
+
 
 
