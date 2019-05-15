@@ -263,7 +263,6 @@ class WGAN(object):
             if self.cuda:
                 z = z.cuda()
 
-            print(z.size()) ## 삭제할거
             x_fake = self.G(z)
             G_loss = self.D(x_fake)
             G_loss = G_loss.mean(0).view(1)
@@ -305,6 +304,8 @@ class WGAN(object):
             _next = z1 + step_size * (i)
             buff = torch.cat([buff, _next], dim=0)
         buff = torch.cat([buff, z2], dim=0)
+
+        buff = torch.unsqueeze(torch.unsqueeze(buff, -1), -1)
 
         samples = self.unscale(self.G(buff))
 
