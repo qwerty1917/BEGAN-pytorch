@@ -267,7 +267,7 @@ class WGAN(object):
 
             x_fake = self.G(z)
             G_loss = self.D(x_fake)
-            G_loss = G_loss.mean(0).view(1)
+            G_loss = G_loss.mean().mean(0).view(1)
             G_loss.backward(one)
             G_cost = -G_loss
             self.G_optim.step()
@@ -279,7 +279,7 @@ class WGAN(object):
                     opts=dict(title='x_fake'))
                 self.viz_train_samples.images(
                     self.unscale(x_real).data.cpu(),
-                    opts=dict(titls='x_real'))
+                    opts=dict(title='x_real'))
 
             if self.visdom and ((self.global_iter <= 1000 and self.global_iter % 10 == 0) or self.global_iter % 200 == 0):
                 self.interpolation(self.fixed_z[0:1], self.fixed_z[1:2])
