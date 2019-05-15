@@ -17,6 +17,18 @@ os.environ["CUDA_x_ORDER"]="PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
 
 
+## Weights init function, DCGAN use 0.02 std
+def weights_init(m):
+    classname = m.__class__.__name__
+    if classname.find('Conv') != -1:
+        m.weight.data.normal_(0.0, 0.02)
+    elif classname.find('BatchNorm') != -1:
+        # Estimated variance, must be around 1
+        m.weight.data.normal_(1.0, 0.02)
+        # Estimated mean, must be around 0
+        m.bias.data.fill_(0)
+
+
 class WGAN(object):
     def __init__(self, args):
         # Misc
@@ -61,8 +73,8 @@ class WGAN(object):
         self.D = Discriminator(self.input_channel)
         self.G = Discriminator(self.input_channel)
 
-        self.D.weight_init(mean=0.0, std=0.02)
-        self.G.weight_init(mean=0.0, std=0.02)
+        self.D.apply(weights_init)
+        self.G.apply(weights_init)
 
         self.D_optim = optim.RMSprop(self.D.parameters(), lr=self.D_lr)
         self.G_optim = optim.RMSprop(self.G.parameters(), lr=self.G_lr)
