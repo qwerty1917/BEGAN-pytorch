@@ -60,15 +60,15 @@ if __name__ == "__main__":
     parser.add_argument('--num_workers', default=1, type=int, help='num_workers for data loader')
     parser.add_argument('--channel', default=3, type=int, help='input image channel')
     parser.add_argument('--noise_mean', default=0, type=float, help='input image noise filter mean')
-    parser.add_argument('--noise_std', default=10, type=float, help='input image noise filter std')
-    parser.add_argument('--hide_range', default=0.4, type=float, help='Theater-hide range ratio')
+    parser.add_argument('--noise_std', default=0, type=float, help='input image noise filter std')
+    parser.add_argument('--hide_range', default=0, type=float, help='Theater-hide range ratio')
     parser.add_argument('--checker_gap', default=5, type=int, help='Checker gap')
     parser.add_argument('--checker_intensity', default=0, type=int, help='Checker intensity')
 
     # Visualization
     parser.add_argument('--env_name', default='main', type=str, help='experiment name')
     parser.add_argument('--visdom', default=True, type=str2bool, help='enable visdom')
-    parser.add_argument('--port', default=8097, type=int, help='visdom port number')
+    parser.add_argument('--port', default=8081, type=int, help='visdom port number')
     parser.add_argument('--timestep', default=10, type=int, help='visdom curve time step')
     parser.add_argument('--output_dir', default='output', type=str, help='image output directory')
 
