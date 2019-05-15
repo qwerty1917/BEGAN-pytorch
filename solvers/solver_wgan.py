@@ -10,7 +10,7 @@ from torch.autograd import Variable
 from torchvision.utils import make_grid, save_image
 
 from datasets import return_data
-from models.wgan.model import Discriminator
+from models.wgan.model import Discriminator, Generator
 from utils import cuda
 
 os.environ["CUDA_x_ORDER"]="PCI_BUS_ID"
