@@ -71,7 +71,7 @@ class WGAN(object):
     def model_init(self):
         # TODO: WGAN model_init
         self.D = Discriminator(self.input_channel)
-        self.G = Discriminator(self.input_channel)
+        self.G = Generator(self.input_channel)
 
         self.D.apply(weights_init)
         self.G.apply(weights_init)
