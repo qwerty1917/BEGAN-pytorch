@@ -127,6 +127,8 @@ class WGAN(object):
             self.set_mode('train')
             return
 
+        z = torch.unsqueeze(torch.unsqueeze(z, -1), -1)
+
         samples = self.unscale(self.G(z))
         samples = samples.data.cpu()
 
