@@ -26,15 +26,29 @@ def main(args):
         net = BEGAN(args)
     elif args.gan_type == 'wgan':
         net = WGAN(args)
-    net.train()
+    else:
+        raise ValueError('gan_type should be one of began, wgan')
+
+    if args.mode == 'train':
+        net.train()
+    elif args.mode == 'eval':
+        net.augment_img()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='BEGAN')
 
+    # Mode
+    parser.add_argument('--mode', default='train', type=str, help='operation modes: train / eval')
+
+    # Evaluation
+    parser.add_argument('--augment_dir', default='augmentation', type=str, help='augmentation directory')
+    parser.add_argument('--augment_num', default=10000, type=int, help='augmentation generate number')
+    parser.add_argument('--best_ratio', default=0.01, type=float, help='best D loss sampling ratio')
+
     # Optimization
     parser.add_argument('--epoch', default=20, type=int, help='epoch size')
-    parser.add_argument('--generator_iters', default=10000, type=int, help='number of iteration for generator in WGAN')
+    parser.add_argument('--generator_iters', default=20000, type=int, help='number of iteration for generator in WGAN')
     parser.add_argument('--batch_size', default=16, type=int, help='batch size')
     parser.add_argument('--D_lr', default=1e-4, type=float, help='learning rate for the Discriminator')
     parser.add_argument('--G_lr', default=1e-4, type=float, help='learning rate for the Generator')

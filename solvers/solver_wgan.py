@@ -31,6 +31,15 @@ def weights_init(m):
 
 class WGAN(object):
     def __init__(self, args):
+
+        # Mode
+        self.mode = args.mode
+
+        # Evaluation
+        self.augment_dir = Path(args.augment_dir).joinpath(args.env_name)
+        self.augment_num = args.augment_num
+        self.best_ratio = args.best_ratio
+
         # Misc
         self.args = args
         self.cuda = args.cuda and torch.cuda.is_available()
@@ -140,6 +149,29 @@ class WGAN(object):
 
         self.set_mode('train')
         return grid
+
+    def augment_img(self):
+        self.set_mode('eval')
+
+        generation_count = int(self.augment_num * (1 / self.best_ratio))
+
+        z = self.sample_z(generation_count)
+        z = Variable(cuda(z, self.cuda))
+
+        z = torch.unsqueeze(torch.unsqueeze(z, -1), -1)
+
+        samples_pool = self.G(z)
+        d_losses = self.D(samples_pool)
+
+        best_indices = torch.topk(d_losses, self.augment_num, largest=False, sorted=False)[1]
+        best_samples = samples_pool[best_indices]
+
+        best_samples = self.unscale(best_samples)
+        best_samples = best_samples.data.cpu()
+
+        for i, sample in enumerate(best_samples):
+            filename = self.augment_dir.joinpath('augmented:' + str(i) + '.png')
+            save_image(sample, filename=filename)
 
     def set_mode(self, mode='train'):
         if mode == 'train':
