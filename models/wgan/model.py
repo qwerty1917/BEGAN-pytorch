@@ -63,19 +63,19 @@ class Generator(nn.Module):
             nn.BatchNorm2d(num_features=256),
             nn.ReLU(True),
 
-            # State (128x16x16)
+            # State (256x16x16)
             nn.ConvTranspose2d(in_channels=256, out_channels=128, kernel_size=4, stride=2, padding=1),
             nn.BatchNorm2d(num_features=128),
             nn.ReLU(True),
 
-            # State (64x32x32)
+            # State (128x32x32)
             nn.ConvTranspose2d(in_channels=128, out_channels=64, kernel_size=4, stride=2, padding=1),
             nn.BatchNorm2d(num_features=64),
             nn.ReLU(True),
 
-            # State (32x64x64)
+            # State (64x64x64)
             nn.ConvTranspose2d(in_channels=64, out_channels=input_channel, kernel_size=4, stride=2, padding=1))
-            # State (16x128x128)
+            # State (1x128x128)
 
         self.output = nn.Tanh()
 

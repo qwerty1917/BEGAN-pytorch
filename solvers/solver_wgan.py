@@ -104,7 +104,7 @@ class WGAN(object):
             self.viz_interpolations = visdom.Visdom(env=self.env_name + '/interpolations', port=self.port)
             self.win_moc = None
 
-    def sample_z(self, batch_size=0, dist='uniform'):
+    def sample_z(self, batch_size=0, dist='normal'):
         if batch_size == 0:
             batch_size = self.batch_size
 
