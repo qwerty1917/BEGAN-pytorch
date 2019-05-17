@@ -166,7 +166,7 @@ class WGAN(object):
         samples_pool = self.G(z)
         d_losses = self.D(samples_pool)
 
-        best_indices = torch.topk(torch.squeeze(d_losses), self.augment_num, largest=True, sorted=False)[1]
+        best_indices = torch.topk(torch.squeeze(d_losses), self.augment_num, largest=False, sorted=False)[1]
         best_samples = samples_pool[best_indices]
 
         best_samples = self.unscale(best_samples)
