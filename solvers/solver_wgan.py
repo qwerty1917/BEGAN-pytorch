@@ -153,6 +153,9 @@ class WGAN(object):
     def augment_img(self):
         self.set_mode('eval')
 
+        if not self.augment_dir.exists():
+            self.augment_dir.mkdir(parents=True, exist_ok=True)
+
         generation_count = int(self.augment_num * (1 / self.best_ratio))
 
         z = self.sample_z(generation_count)
