@@ -158,23 +158,39 @@ class WGAN(object):
 
         generation_count = int(self.augment_num * (1 / self.best_ratio))
 
-        z = self.sample_z(generation_count)
-        z = Variable(cuda(z, self.cuda))
+        memory_limit_count = 5000
 
-        z = torch.unsqueeze(torch.unsqueeze(z, -1), -1)
+        batch_count_list = [5000]*(generation_count//memory_limit_count)
+        batch_count_list.append(generation_count % memory_limit_count)
 
-        samples_pool = self.G(z)
-        d_losses = self.D(samples_pool)
+        total_augmented_count = 0
+        for batch_i, batch_generation_count in enumerate(batch_count_list):
+            if batch_generation_count <= 0:
+                continue
 
-        best_indices = torch.topk(torch.squeeze(d_losses), self.augment_num, largest=False, sorted=False)[1]
-        best_samples = samples_pool[best_indices]
+            if batch_i < len(batch_count_list) - 1:
+                batch_best_count = int(batch_generation_count * self.best_ratio)
+            else:
+                batch_best_count = self.augment_num - total_augmented_count
 
-        best_samples = self.unscale(best_samples)
-        best_samples = best_samples.data.cpu()
+            z = self.sample_z(batch_generation_count)
+            z = Variable(cuda(z, self.cuda))
 
-        for i, sample in enumerate(best_samples):
-            filename = self.augment_dir.joinpath('augmented:' + str(i) + '.png')
-            save_image(sample, filename=filename)
+            z = torch.unsqueeze(torch.unsqueeze(z, -1), -1)
+
+            samples_pool = self.G(z)
+            d_losses = self.D(samples_pool)
+
+            best_indices = torch.topk(torch.squeeze(d_losses), batch_best_count, largest=False, sorted=False)[1]
+            best_samples = samples_pool[best_indices]
+
+            best_samples = self.unscale(best_samples)
+            best_samples = best_samples.data.cpu()
+
+            for sample_i, sample in enumerate(best_samples):
+                total_augmented_count += 1
+                filename = self.augment_dir.joinpath('augmented:' + str(total_augmented_count) + '.png')
+                save_image(sample, filename=filename)
 
     def set_mode(self, mode='train'):
         if mode == 'train':
