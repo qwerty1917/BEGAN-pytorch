@@ -8,6 +8,7 @@ import time
 from torch import nn, optim
 from torch.autograd import Variable
 from torchvision.utils import make_grid, save_image
+from tqdm import tqdm
 
 from datasets import return_data
 from models.wgan.model import Discriminator, Generator
@@ -164,7 +165,7 @@ class WGAN(object):
         batch_count_list.append(generation_count % memory_limit_count)
 
         total_augmented_count = 0
-        for batch_i, batch_generation_count in enumerate(batch_count_list):
+        for batch_i, batch_generation_count in enumerate(tqdm(batch_count_list, desc="Augmentation")):
             if batch_generation_count <= 0:
                 continue
 
