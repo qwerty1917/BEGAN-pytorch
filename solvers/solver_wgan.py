@@ -158,9 +158,9 @@ class WGAN(object):
 
         generation_count = int(self.augment_num * (1 / self.best_ratio))
 
-        memory_limit_count = 5000
+        memory_limit_count = 1000
 
-        batch_count_list = [5000]*(generation_count//memory_limit_count)
+        batch_count_list = [memory_limit_count]*(generation_count//memory_limit_count)
         batch_count_list.append(generation_count % memory_limit_count)
 
         total_augmented_count = 0
