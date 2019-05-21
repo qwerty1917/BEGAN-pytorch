@@ -146,4 +146,5 @@ pip-selfcheck.json
 checkpoint/
 data/
 output/
+augmentation/
 .idea/
