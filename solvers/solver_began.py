@@ -15,7 +15,7 @@ from torch.autograd import Variable
 from torch.optim import lr_scheduler
 from torchvision.utils import make_grid, save_image
 
-from datasets import return_data
+from gan_datasets import return_data
 from models.began.model import Discriminator, Generator
 from utils import cuda
 
