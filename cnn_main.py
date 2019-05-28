@@ -52,9 +52,8 @@ if __name__ == "__main__":
     # Dataset
     parser.add_argument('--inter_fold_subject_shuffle', default=False, type=bool, help='subject shuffle inter-folds')
     parser.add_argument('--time_window', default=3, type=float, help='time window seconds')
-    parser.add_argument('--augmentation', default=False, type=bool, help='GAN augmentation')
-    parser.add_argument('--dset_dir', default='data', type=str, help='dataset directory')
-    parser.add_argument('--dataset', default='CIFAR10', type=str, help='CIFAR10, CelebA')
+    parser.add_argument('--train_dset_dir', default='data/onbody-conditional-4fold/fold1/train', type=str, help='train dataset directory')
+    parser.add_argument('--test_dset_dir', default='data/onbody-conditional-4fold/fold1/test', type=str, help='test dataset directory')
     parser.add_argument('--num_workers', default=1, type=int, help='num_workers for data loader')
     parser.add_argument('--channel', default=3, type=int, help='input image channel')
 
