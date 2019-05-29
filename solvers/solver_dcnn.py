@@ -162,7 +162,7 @@ class DCNN(object):
                         outputs = self.C(images)
                         _, predicted = torch.max(outputs, 1)
                         total += labels.size(0)
-                        correct += (predicted == labels).sum().cpu().item()
+                        correct += (predicted == labels).cpu().sum().item()
 
                     print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, test acc.: {:.4f}'
                           .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), (100 * correct / total)))
