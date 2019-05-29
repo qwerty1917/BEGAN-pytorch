@@ -173,8 +173,8 @@ class DCNN(object):
                         correct += (predicted == labels).sum().item()
                         test_acc = 100 * correct / total
 
-                    print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, train acc.: {:.4f}, test acc.: {:.4f}'
-                          .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), train_acc, test_acc))
+                    print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, train acc.: {:.4f}, test acc.: {:.4f} ({} / {})'
+                          .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), train_acc, test_acc, correct, total))
 
                 if (i+1) % 100 == 0:
                     self.save_checkpoint()
