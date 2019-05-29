@@ -47,7 +47,7 @@ def return_data(args):
                               pin_memory=True,
                               drop_last=True)
     test_loader = DataLoader(test_data,
-                             batch_size=batch_size,
+                             batch_size=252,
                              shuffle=True,
                              num_workers=num_workers,
                              pin_memory=True,

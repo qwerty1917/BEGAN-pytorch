@@ -7,7 +7,7 @@ class Dcnn(nn.Module):
 
         self.conv_layers = nn.Sequential(
             # Image (Cx128x128)
-            nn.Conv2d(in_channels=input_channel, out_channels=16, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(in_channels=input_channel, out_channels=16, kernel_size=7, stride=1, padding=3),
             nn.BatchNorm2d(num_features=16),
             nn.ReLU(),
 
