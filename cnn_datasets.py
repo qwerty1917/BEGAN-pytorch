@@ -73,7 +73,10 @@ class TimeWindow(object):
 
         trim_width = int((self.time_window/self.max_time_window) * img_w)
 
-        np_trimmed = np_img[:, :trim_width, :]
+        if ch > 1:
+            np_trimmed = np_img[:, :trim_width, :]
+        else:
+            np_trimmed = np_img[:, :trim_width]
 
         trimmed_img = PIL.Image.fromarray(np_trimmed.astype('uint8'))
 
