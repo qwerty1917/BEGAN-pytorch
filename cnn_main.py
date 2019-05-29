@@ -42,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument('--epoch', default=20, type=int, help='epoch size')
     parser.add_argument('--batch_size', default=16, type=int, help='batch size')
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate for the network')
-    parser.add_argument('--early_stopping_iter', default=1000, type=int, help='training stops when train loss not improved in this iteration')
+    parser.add_argument('--early_stopping_iter', default=500, type=int, help='training stops when train loss not improved in this iteration')
 
     # Network
     parser.add_argument('--cnn_type', default='dcnn', type=str, help='CNN types : dcnn,')

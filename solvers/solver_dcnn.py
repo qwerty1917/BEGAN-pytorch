@@ -44,6 +44,7 @@ class DCNN(object):
         self.lr = args.lr
         self.global_iter = 0
         self.criterion = nn.CrossEntropyLoss()
+        self.early_stopping_iter = args.early_stopping_iter
 
         # Visualization
         self.env_name = args.env_name
@@ -135,9 +136,12 @@ class DCNN(object):
 
     def train(self):
         self.set_mode('train')
+        min_loss = None
+        min_loss_not_updated = 0
+        early_stop = False
 
         while True:
-            if self.epoch_i >= self.epoch:
+            if self.epoch_i >= self.epoch or early_stop:
                 break
             self.epoch_i += 1
             for i, (images, labels) in enumerate(self.data_loader['train']):
@@ -147,11 +151,11 @@ class DCNN(object):
                 self.global_iter += 1
                 # Forward
                 outputs = self.C(images)
-                loss = self.criterion(outputs, labels)
+                train_loss = self.criterion(outputs, labels)
 
                 # Backward
                 self.C_optim.zero_grad()
-                loss.backward()
+                train_loss.backward()
                 self.C_optim.step()
 
                 # train acc
@@ -172,11 +176,48 @@ class DCNN(object):
                         total += labels.size(0)
                         correct += (predicted == labels).sum().item()
                         test_acc = 100 * correct / total
+                        test_loss = self.criterion(outputs, labels)
 
-                    print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, train acc.: {:.4f}, test acc.: {:.4f} ({} / {})'
-                          .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), train_acc, test_acc, correct, total))
+                    print('Epoch [{}/{}], Step [{}/{}], train loss: {:.4f}, train acc.: {:.4f}, test loss:{:.4f}, test acc.: {:.4f} ({} / {}), min_loss_not_updated: {}'
+                          .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc, correct, total, min_loss_not_updated))
 
                 if self.global_iter % 100 == 0:
                     self.save_checkpoint()
+
+                if min_loss is None:
+                    min_loss = train_loss.item()
+                elif train_loss.item() < min_loss:
+                    min_loss = train_loss.item()
+                    min_loss_not_updated = 0
+                else:
+                    min_loss_not_updated += 1
+
+                if min_loss_not_updated >= self.early_stopping_iter:
+                    early_stop = True
+
+
+
+    def evaluation(self):
+        self.load_ckpt()
+        self.set_mode('eval')
+
+        self.C.eval()
+
+        images, labels = self.data_loader['test'].next()
+        images = Variable(cuda(images, self.cuda))
+        labels = Variable(cuda(labels, self.cuda))
+
+        outputs = self.C(images)
+        _, predicted = torch.max(outputs, 1)
+        total = labels.size(0)
+        correct = (predicted == labels).sum().item()
+        eval_acc = 100 * correct / total
+        print("Epoch: {}, iter: {}, ")
+        print("Test acc.:{:.4f}".format(eval_acc))
+
+
+
+
+
 
 
