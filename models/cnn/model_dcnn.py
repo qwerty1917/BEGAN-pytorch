@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class Dcnn(nn.Module):
     def __init__(self, input_channel):
-        super().__init__()
+        super(Dcnn, self).__init__()
 
         self.conv_layers = nn.Sequential(
             # Image (Cx128x128)
