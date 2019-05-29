@@ -212,7 +212,7 @@ class DCNN(object):
         eval_acc = 100 * correct / total
         test_loss = self.criterion(outputs, labels)
         env_name = self.args.env_name
-        print("Env name: {}".format(env_name))
+        print("##### Env name: {} #####".format(env_name))
         print("Epoch: {}, iter: {}, test loss: {:.4f}, Test acc.: {:.4f}".format(self.epoch_i, self.global_iter, test_loss, eval_acc))
 
 
