@@ -183,7 +183,7 @@ class DCNN(object):
                           .format(self.epoch_i, self.epoch, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc, correct, total, min_loss_not_updated))
 
                 if self.global_iter % 10 == 0:
-                    self.log_csv(self, self.epoch_i, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc)
+                    self.log_csv(self.epoch_i, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc)
                     self.save_checkpoint()
 
                 if min_loss is None:
