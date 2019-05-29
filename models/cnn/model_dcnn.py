@@ -78,6 +78,7 @@ class Dcnn(nn.Module):
 
     def forward(self, x):
         x = self.conv_layers(x)
+        print(x.size())
         x = x.reshape(1024, -1)
         x = self.fc_layers(x)
         x = self.output(x)
