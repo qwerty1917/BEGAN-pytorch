@@ -160,7 +160,7 @@ class DCNN(object):
                 correct = (predicted == labels).sum().item()
                 train_acc = 100 * correct / total
 
-                if (i+1) % 10 == 0:
+                if (i+1) % 1 == 0:
                     self.C.eval()
                     correct = 0
                     total = 0
