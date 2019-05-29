@@ -181,7 +181,7 @@ class DCNN(object):
                     print('Epoch [{}/{}], Step [{}/{}], train loss: {:.4f}, train acc.: {:.4f}, test loss:{:.4f}, test acc.: {:.4f} ({} / {}), min_loss_not_updated: {}'
                           .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc, correct, total, min_loss_not_updated))
 
-                if self.global_iter % 100 == 0:
+                if self.global_iter % 10 == 0:
                     self.save_checkpoint()
 
                 if min_loss is None:
