@@ -140,6 +140,9 @@ class DCNN(object):
                 break
             self.epoch_i += 1
             for i, (images, labels) in enumerate(self.data_loader['train']):
+                images = cuda(images, self.cuda)
+                labels = cuda(labels, self.cuda)
+
                 self.global_iter += 1
                 # Forward
                 outputs = self.C(images)
