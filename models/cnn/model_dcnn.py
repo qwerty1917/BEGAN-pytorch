@@ -60,12 +60,12 @@ class Dcnn(nn.Module):
             # State (1024x1x1)
             nn.Linear(1024, 128),
             nn.ReLU(),
-            nn.Dropout2d(0.4),
+            nn.Dropout(0.4),
 
             # State (128)
             nn.Linear(128, 128),
             nn.ReLU(),
-            nn.Dropout2d(0.4),
+            nn.Dropout(0.4),
 
             # State (128)
             nn.Linear(128, 7),
