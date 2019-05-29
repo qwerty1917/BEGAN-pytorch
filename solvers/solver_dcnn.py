@@ -3,6 +3,7 @@ from pathlib import Path
 import torch
 import visdom
 from torch import optim, nn
+from torch.autograd import Variable
 
 from cnn_datasets import return_data
 from models.cnn.model_dcnn import Dcnn
@@ -140,8 +141,8 @@ class DCNN(object):
                 break
             self.epoch_i += 1
             for i, (images, labels) in enumerate(self.data_loader['train']):
-                images = cuda(images, self.cuda)
-                labels = cuda(labels, self.cuda)
+                images = Variable(cuda(images, self.cuda))
+                labels = Variable(cuda(labels, self.cuda))
 
                 self.global_iter += 1
                 # Forward
