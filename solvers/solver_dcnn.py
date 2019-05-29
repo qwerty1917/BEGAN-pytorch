@@ -159,10 +159,12 @@ class DCNN(object):
                     correct = 0
                     total = 0
                     for images, labels in self.data_loader['test']:
+                        images = Variable(cuda(images, self.cuda))
+                        labels = Variable(cuda(labels, self.cuda))
                         outputs = self.C(images)
                         _, predicted = torch.max(outputs, 1)
                         total += labels.size(0)
-                        correct += (predicted.cpu() == labels).sum().item()
+                        correct += (predicted == labels).sum().item()
 
                     print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, test acc.: {:.4f}'
                           .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), (100 * correct / total)))
