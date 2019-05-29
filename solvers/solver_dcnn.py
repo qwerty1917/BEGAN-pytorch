@@ -195,9 +195,7 @@ class DCNN(object):
                 if min_loss_not_updated >= self.early_stopping_iter:
                     early_stop = True
 
-
-
-    def evaluation(self):
+    def evaluate(self):
         self.load_ckpt()
         self.set_mode('eval')
 
