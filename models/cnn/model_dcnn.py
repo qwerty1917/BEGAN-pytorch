@@ -21,7 +21,7 @@ class Dcnn(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
 
             # State (32x32x32)
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(num_features=64),
             nn.ReLU(),
 
