@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 
 import torch
@@ -179,9 +180,10 @@ class DCNN(object):
                         test_loss = self.criterion(outputs, labels)
 
                     print('Epoch [{}/{}], Iter [{}], train loss: {:.4f}, train acc.: {:.4f}, test loss:{:.4f}, test acc.: {:.4f} ({} / {}), min_loss_not_updated: {}'
-                          .format(self.epoch_i + 1, self.epoch, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc, correct, total, min_loss_not_updated))
+                          .format(self.epoch_i, self.epoch, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc, correct, total, min_loss_not_updated))
 
                 if self.global_iter % 10 == 0:
+                    self.log_csv(self, self.epoch_i, self.global_iter, train_loss.item(), train_acc, test_loss.item(), test_acc)
                     self.save_checkpoint()
 
                 if min_loss is None:
@@ -194,6 +196,16 @@ class DCNN(object):
 
                 if min_loss_not_updated >= self.early_stopping_iter:
                     early_stop = True
+
+    def log_csv(self, epoch, g_iter, train_loss, train_acc, test_loss, test_acc, filename='log.csv'):
+        file_path = self.output_dir.joinpath(filename)
+        if not file_path.is_file():
+            file = open(file_path, 'w', encoding='utf-8')
+        else:
+            file = open(file_path, 'a', encoding='utf-8')
+        wr = csv.writer(file)
+        wr.writerow([g_iter, epoch, train_loss, train_acc, test_loss, test_acc])
+        file.close()
 
     def evaluate(self):
         self.load_checkpoint()
