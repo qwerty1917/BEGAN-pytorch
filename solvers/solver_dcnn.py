@@ -61,7 +61,6 @@ class DCNN(object):
         self.model_init()
 
         # Dataset
-        self.dataset = args.dataset
         self.data_loader = return_data(args)
 
     def model_init(self):
