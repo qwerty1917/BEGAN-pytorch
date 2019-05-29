@@ -154,6 +154,12 @@ class DCNN(object):
                 loss.backward()
                 self.C_optim.step()
 
+                # train acc
+                _, predicted = torch.max(outputs, 1)
+                total = labels.size(0)
+                correct = (predicted == labels).sum().item()
+                train_acc = 100 * correct / total
+
                 if (i+1) % 1 == 0:
                     self.C.eval()
                     correct = 0
@@ -165,9 +171,10 @@ class DCNN(object):
                         _, predicted = torch.max(outputs, 1)
                         total += labels.size(0)
                         correct += (predicted == labels).sum().item()
+                        test_acc = 100 * correct / total
 
-                    print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, test acc.: {:.4f}'
-                          .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), (100 * correct / total)))
+                    print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, train acc.: {:.4f}, test acc.: {:.4f}'
+                          .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), train_acc, test_acc))
 
                     self.save_checkpoint()
 
