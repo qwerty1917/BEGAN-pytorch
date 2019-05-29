@@ -143,7 +143,7 @@ class DCNN(object):
             for i, (images, labels) in enumerate(self.data_loader['train']):
                 images = Variable(cuda(images, self.cuda))
                 labels = Variable(cuda(labels, self.cuda))
-                print(labels.size())
+                print(labels)
                 raise()
 
                 self.global_iter += 1
