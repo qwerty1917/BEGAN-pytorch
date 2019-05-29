@@ -201,7 +201,7 @@ class DCNN(object):
 
         self.C.eval()
 
-        images, labels = self.data_loader['test'].next()
+        images, labels = next(iter(self.data_loader['test']))
         images = Variable(cuda(images, self.cuda))
         labels = Variable(cuda(labels, self.cuda))
 
