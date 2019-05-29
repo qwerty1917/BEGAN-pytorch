@@ -162,7 +162,7 @@ class DCNN(object):
                         outputs = self.C(images)
                         _, predicted = torch.max(outputs, 1)
                         total += labels.size(0)
-                        _ = predicted == labels
+                        _ = predicted.cpu() == labels.cpu()
                         _ = (predicted == labels).sum()
                         _ = (predicted == labels).sum().item()
                         correct += (predicted == labels).sum().item()
