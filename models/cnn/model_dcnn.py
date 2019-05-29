@@ -81,6 +81,7 @@ class Dcnn(nn.Module):
         x = self.conv_layers(x)
         print(x.size())
         x = x.reshape(1024, -1)
+        print(x.size())
         x = self.fc_layers(x)
         x = self.output(x)
 
