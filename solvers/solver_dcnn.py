@@ -143,6 +143,8 @@ class DCNN(object):
             for i, (images, labels) in enumerate(self.data_loader['train']):
                 images = Variable(cuda(images, self.cuda))
                 labels = Variable(cuda(labels, self.cuda))
+                print(labels.size())
+                raise()
 
                 self.global_iter += 1
                 # Forward
@@ -160,7 +162,7 @@ class DCNN(object):
                 correct = (predicted == labels).sum().item()
                 train_acc = 100 * correct / total
 
-                if (i+1) % 1 == 0:
+                if (i+1) % 10 == 0:
                     self.C.eval()
                     correct = 0
                     total = 0
@@ -176,6 +178,7 @@ class DCNN(object):
                     print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, train acc.: {:.4f}, test acc.: {:.4f}'
                           .format(self.epoch_i + 1, self.epoch, i + 1, self.global_iter, loss.item(), train_acc, test_acc))
 
+                if (i+1) % 100 == 0:
                     self.save_checkpoint()
 
 
