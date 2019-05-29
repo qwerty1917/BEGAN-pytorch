@@ -62,10 +62,10 @@ class Dcnn(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.4),
 
-            # State (128)
-            nn.Linear(128, 128),
-            nn.ReLU(),
-            nn.Dropout(0.4),
+            # # State (128)
+            # nn.Linear(128, 128),
+            # nn.ReLU(),
+            # nn.Dropout(0.4),
 
             # State (128)
             nn.Linear(128, 7),
