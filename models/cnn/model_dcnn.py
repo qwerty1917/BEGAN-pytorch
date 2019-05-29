@@ -59,7 +59,7 @@ class Dcnn(nn.Module):
         self.fc_layers = nn.Sequential(
             # State (1024x1x1)
             nn.Linear(1024, 128),
-            # nn.ReLU(),
+            nn.ReLU(),
             # nn.Dropout(0.4),
 
             # # State (128)
