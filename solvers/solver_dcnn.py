@@ -196,7 +196,7 @@ class DCNN(object):
                     early_stop = True
 
     def evaluate(self):
-        self.load_ckpt()
+        self.load_checkpoint()
         self.set_mode('eval')
 
         self.C.eval()
