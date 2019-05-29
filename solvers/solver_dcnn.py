@@ -204,7 +204,7 @@ class DCNN(object):
         else:
             file = open(file_path, 'a', encoding='utf-8')
         wr = csv.writer(file)
-        wr.writerow([g_iter, epoch, train_loss, train_acc, test_loss, test_acc])
+        wr.writerow([g_iter, epoch, round(train_loss, 4), round(train_acc, 4), round(test_loss, 4), round(test_acc, 4)])
         file.close()
 
     def evaluate(self):
