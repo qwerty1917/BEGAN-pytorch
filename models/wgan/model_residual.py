@@ -57,12 +57,12 @@ class Discriminator(nn.Module):
         i = self.intro_module(x)
 
         r1 = self.residual_module_1(i)
-        r1 += self.max_pool(i)
+        r1 = r1 + self.max_pool(i)
 
         u = self.up_channel_module(r1)
 
         r2 = self.residual_module_2(u)
-        r2 += self.max_pool(u)
+        r2 = r2 + self.max_pool(u)
 
         o = self.output(r2)
         return o
@@ -173,12 +173,12 @@ class Generator(nn.Module):
         i = self.intro_module(x)
 
         r1 = self.residual_module_1(i)
-        r1 += self.up_sample(i)
+        r1 = r1 + self.up_sample(i)
 
         d = self.down_channel(r1)
 
         r2 = self.residual_module_2(d)
-        r2 += self.up_sample(d)
+        r2 = r2 + self.up_sample(d)
 
         o = self.output(r2)
         return o
