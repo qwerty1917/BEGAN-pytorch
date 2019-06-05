@@ -46,7 +46,7 @@ class Discriminator(nn.Module):
             nn.LeakyReLU(0.2, inplace=True)
             # State (64x4x4)
         )
-        self.max_pool = nn.MaxPool2d()
+        self.max_pool = nn.MaxPool2d(kernel_size=2, stride=2)
 
         self.output = nn.Sequential(
             # State (1024x4x4)
