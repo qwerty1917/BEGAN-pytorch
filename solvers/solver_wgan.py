@@ -12,6 +12,8 @@ from tqdm import tqdm
 
 from gan_datasets import return_data
 from models.wgan.model import Discriminator, Generator
+from models.wgan.model_residual import Discriminator as Discriminator_res
+from models.wgan.model_residual import Generator as Generator_res
 from utils import cuda
 
 os.environ["CUDA_x_ORDER"]="PCI_BUS_ID"
@@ -72,6 +74,7 @@ class WGAN(object):
         self.input_channel = args.channel
         self.multi_gpu = args.multi_gpu
         self.weight_clipping_limit = args.weight_clipping_limit
+        self.model = args.model
         self.model_init()
 
         # Dataset
@@ -80,8 +83,12 @@ class WGAN(object):
 
     def model_init(self):
         # TODO: WGAN model_init
-        self.D = Discriminator(self.input_channel)
-        self.G = Generator(self.input_channel)
+        if self.model == 'default':
+            self.D = Discriminator(self.input_channel)
+            self.G = Generator(self.input_channel)
+        elif self.model == 'residual':
+            self.D = Discriminator_res(self.input_channel)
+            self.G = Generator_res(self.input_channel)
 
         self.D.apply(weights_init)
         self.G.apply(weights_init)

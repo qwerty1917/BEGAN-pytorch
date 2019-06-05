@@ -67,6 +67,7 @@ if __name__ == "__main__":
     parser.add_argument('--ckpt_dir', default='checkpoint', type=str, help='weight directory')
     parser.add_argument('--image_size', default=32, type=int, help='image size')
     parser.add_argument('--weight_clipping_limit', default=0.01, type=float, help='WGAN-CP clipping limit')
+    parser.add_argument('--model', default='default', type=str, help='WGAN model type. default or residual')
 
     # Dataset
     parser.add_argument('--dset_dir', default='data', type=str, help='dataset directory')
