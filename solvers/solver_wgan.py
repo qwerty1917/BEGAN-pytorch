@@ -88,7 +88,7 @@ class WGAN(object):
             self.G = Generator(self.input_channel)
         elif self.model == 'residual':
             self.D = Discriminator_res(self.input_channel)
-            self.G = Generator(self.input_channel)
+            self.G = Generator_res(self.input_channel)
 
         self.D.apply(weights_init)
         self.G.apply(weights_init)
