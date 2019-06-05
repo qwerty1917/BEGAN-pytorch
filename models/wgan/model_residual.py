@@ -46,7 +46,7 @@ class Discriminator(nn.Module):
             nn.LeakyReLU(0.2)
             # State (64x4x4)
         )
-        self.max_pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.max_pool = nn.MaxPool2d(kernel_size=4, stride=4)
 
         self.output = nn.Sequential(
             # State (1024x4x4)
@@ -57,57 +57,15 @@ class Discriminator(nn.Module):
         i = self.intro_module(x)
 
         r1 = self.residual_module_1(i)
-        r1 += self.max_pool(self.max_pool(i))
+        r1 += self.max_pool(i)
 
         u = self.up_channel_module(r1)
 
         r2 = self.residual_module_2(u)
-        r2 += self.max_pool(self.max_pool(u))
+        r2 += self.max_pool(u)
 
         o = self.output(r2)
         return o
-
-
-class Generator(nn.Module):
-    def __init__(self, input_channel):
-        super().__init__()
-        # Input_dim = 100
-        # Output_dim = (Cx128x128)
-        self.main_module = nn.Sequential(
-            # Z latent vector 100
-            nn.ConvTranspose2d(in_channels=100, out_channels=128, kernel_size=4, stride=1, padding=0),
-            nn.BatchNorm2d(num_features=128),
-            nn.ReLU(True),
-
-            # State (1024x4x4)
-            nn.ConvTranspose2d(in_channels=128, out_channels=64, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(num_features=64),
-            nn.ReLU(True),
-
-            # State (512x8x8)
-            nn.ConvTranspose2d(in_channels=64, out_channels=32, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(num_features=32),
-            nn.ReLU(True),
-
-            # State (256x16x16)
-            nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(num_features=16),
-            nn.ReLU(True),
-
-            # State (128x32x32)
-            nn.ConvTranspose2d(in_channels=16, out_channels=8, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(num_features=8),
-            nn.ReLU(True),
-
-            # State (64x64x64)
-            nn.ConvTranspose2d(in_channels=8, out_channels=input_channel, kernel_size=4, stride=2, padding=1))
-        # State (1x128x128)
-
-        self.output = nn.Tanh()
-
-    def forward(self, x):
-        x = self.main_module(x)
-        return self.output(x)
 
 
 # class Generator(nn.Module):
@@ -115,68 +73,112 @@ class Generator(nn.Module):
 #         super().__init__()
 #         # Input_dim = 100
 #         # Output_dim = (Cx128x128)
-#         self.intro_module = nn.Sequential(
+#         self.main_module = nn.Sequential(
 #             # Z latent vector 100
-#             nn.ConvTranspose2d(in_channels=100, out_channels=64, kernel_size=4, stride=1, padding=0),
-#             nn.BatchNorm2d(num_features=64),
+#             nn.ConvTranspose2d(in_channels=100, out_channels=128, kernel_size=4, stride=1, padding=0),
+#             nn.BatchNorm2d(num_features=128),
 #             nn.ReLU(True),
-#             # State (64x4x4)
-#         )
 #
-#         self.residual_module_1 = nn.Sequential(
-#             # State (64x4x4)
-#             nn.ConvTranspose2d(in_channels=64, out_channels=64, kernel_size=4, stride=2, padding=1),
+#             # State (1024x4x4)
+#             nn.ConvTranspose2d(in_channels=128, out_channels=64, kernel_size=4, stride=2, padding=1),
 #             nn.BatchNorm2d(num_features=64),
 #             nn.ReLU(True),
 #
-#             # State (64x8x8)
-#             nn.ConvTranspose2d(in_channels=64, out_channels=64, kernel_size=4, stride=2, padding=1),
-#             nn.BatchNorm2d(num_features=64),
-#             nn.ReLU(True),
-#             # State (64x16x16)
-#         )
-#
-#         self.down_channel = nn.Sequential(
-#             # State (64x16x16)
-#             nn.ConvTranspose2d(in_channels=64, out_channels=32, kernel_size=3, stride=1, padding=1),
-#             nn.BatchNorm2d(num_features=32),
-#             nn.ReLU(True)
-#             # State (32x16x16)
-#         )
-#
-#         self.residual_module_2 = nn.Sequential(
-#             # State (32x16x16)
-#             nn.ConvTranspose2d(in_channels=32, out_channels=32, kernel_size=4, stride=2, padding=1),
+#             # State (512x8x8)
+#             nn.ConvTranspose2d(in_channels=64, out_channels=32, kernel_size=4, stride=2, padding=1),
 #             nn.BatchNorm2d(num_features=32),
 #             nn.ReLU(True),
 #
-#             # State (32x32x32)
-#             nn.ConvTranspose2d(in_channels=32, out_channels=32, kernel_size=4, stride=2, padding=1),
-#             nn.BatchNorm2d(num_features=32),
+#             # State (256x16x16)
+#             nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=4, stride=2, padding=1),
+#             nn.BatchNorm2d(num_features=16),
 #             nn.ReLU(True),
-#             # State (32x64x64)
-#         )
 #
-#         self.output = nn.Sequential(
-#             # State (32x64x64)
-#             nn.ConvTranspose2d(in_channels=32, out_channels=input_channel, kernel_size=8, stride=2, padding=3),
-#             nn.BatchNorm2d(num_features=input_channel),
+#             # State (128x32x32)
+#             nn.ConvTranspose2d(in_channels=16, out_channels=8, kernel_size=4, stride=2, padding=1),
+#             nn.BatchNorm2d(num_features=8),
 #             nn.ReLU(True),
-#             # State (Cx128x128)
 #
-#             nn.Tanh()
-#         )
+#             # State (64x64x64)
+#             nn.ConvTranspose2d(in_channels=8, out_channels=input_channel, kernel_size=4, stride=2, padding=1))
+#         # State (1x128x128)
+#
+#         self.output = nn.Tanh()
 #
 #     def forward(self, x):
-#         i = self.intro_module(x)
-#
-#         r1 = self.residual_module_1(i)
-#         r1 += i
-#
-#         d = self.down_channel(r1)
-#
-#         r2 = self.residual_module_2(d)
-#         r2 += d
-#
-#         o = self.output(r2)
-#         return o
+#         x = self.main_module(x)
+#         return self.output(x)
+
+
+class Generator(nn.Module):
+    def __init__(self, input_channel):
+        super().__init__()
+        # Input_dim = 100
+        # Output_dim = (Cx128x128)
+        self.intro_module = nn.Sequential(
+            # Z latent vector 100
+            nn.ConvTranspose2d(in_channels=100, out_channels=64, kernel_size=4, stride=1, padding=0),
+            nn.BatchNorm2d(num_features=64),
+            nn.ReLU(True),
+            # State (64x4x4)
+        )
+
+        self.residual_module_1 = nn.Sequential(
+            # State (64x4x4)
+            nn.ConvTranspose2d(in_channels=64, out_channels=64, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(num_features=64),
+            nn.ReLU(True),
+
+            # State (64x8x8)
+            nn.ConvTranspose2d(in_channels=64, out_channels=64, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(num_features=64),
+            nn.ReLU(True),
+            # State (64x16x16)
+        )
+
+        self.up_sample = nn.UpsamplingBilinear2d(scale_factor=4)
+
+        self.down_channel = nn.Sequential(
+            # State (64x16x16)
+            nn.ConvTranspose2d(in_channels=64, out_channels=32, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(num_features=32),
+            nn.ReLU(True)
+            # State (32x16x16)
+        )
+
+        self.residual_module_2 = nn.Sequential(
+            # State (32x16x16)
+            nn.ConvTranspose2d(in_channels=32, out_channels=32, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(num_features=32),
+            nn.ReLU(True),
+
+            # State (32x32x32)
+            nn.ConvTranspose2d(in_channels=32, out_channels=32, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(num_features=32),
+            nn.ReLU(True),
+            # State (32x64x64)
+        )
+
+        self.output = nn.Sequential(
+            # State (32x64x64)
+            nn.ConvTranspose2d(in_channels=32, out_channels=input_channel, kernel_size=8, stride=2, padding=3),
+            nn.BatchNorm2d(num_features=input_channel),
+            nn.ReLU(True),
+            # State (Cx128x128)
+
+            nn.Tanh()
+        )
+
+    def forward(self, x):
+        i = self.intro_module(x)
+
+        r1 = self.residual_module_1(i)
+        r1 += self.up_sample(i)
+
+        d = self.down_channel(r1)
+
+        r2 = self.residual_module_2(d)
+        r2 += self.up_sample(d)
+
+        o = self.output(r2)
+        return o
