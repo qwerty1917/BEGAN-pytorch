@@ -9,7 +9,7 @@ class Discriminator(nn.Module):
             # Image (Cx128x128)
             nn.Conv2d(in_channels=input_channel, out_channels=32, kernel_size=7, stride=2, padding=3),
             nn.BatchNorm2d(num_features=32),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
             # State (32x64x64)
         )
 
@@ -30,7 +30,7 @@ class Discriminator(nn.Module):
             # State (32x16x16)
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(num_features=64),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
             # State (64x16x16)
         )
 
