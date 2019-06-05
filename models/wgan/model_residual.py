@@ -162,8 +162,6 @@ class Generator(nn.Module):
         self.output = nn.Sequential(
             # State (32x64x64)
             nn.ConvTranspose2d(in_channels=32, out_channels=input_channel, kernel_size=8, stride=2, padding=3),
-            nn.BatchNorm2d(num_features=input_channel),
-            nn.ReLU(True),
             # State (Cx128x128)
 
             nn.Tanh()
