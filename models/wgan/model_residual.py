@@ -17,12 +17,12 @@ class Discriminator(nn.Module):
             # State (32x64x64)
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(num_features=32),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
 
             # State (32x32x32)
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(num_features=32),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
             # State (32x16x16)
         )
 
@@ -38,12 +38,12 @@ class Discriminator(nn.Module):
             # State (64x16x16)
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(num_features=64),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
 
             # State (64x8x8)
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(num_features=64),
-            nn.LeakyReLU(0.2, inplace=True)
+            nn.LeakyReLU(0.2)
             # State (64x4x4)
         )
         self.max_pool = nn.MaxPool2d(kernel_size=2, stride=2)
