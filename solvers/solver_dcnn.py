@@ -45,6 +45,7 @@ class DCNN(object):
         self.lr = args.lr
         self.global_iter = 0
         self.criterion = nn.CrossEntropyLoss()
+        self.early_stopping = args.early_stopping
         self.early_stopping_iter = args.early_stopping_iter
 
         # Visualization
@@ -194,7 +195,7 @@ class DCNN(object):
                 else:
                     min_loss_not_updated += 1
 
-                if min_loss_not_updated >= self.early_stopping_iter:
+                if self.early_stopping and (min_loss_not_updated >= self.early_stopping_iter):
                     early_stop = True
 
     def log_csv(self, epoch, g_iter, train_loss, train_acc, test_loss, test_acc, filename='log.csv'):
