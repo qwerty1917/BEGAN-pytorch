@@ -148,3 +148,6 @@ data/
 output/
 augmentation/
 .idea/
+cnn_checkpoint/
+cnn_output/
+*.ipynb
