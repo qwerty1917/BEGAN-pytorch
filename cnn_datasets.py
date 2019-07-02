@@ -24,11 +24,6 @@ def return_data(args):
     if args.channel == 1:
         transform_list.append(transforms.Grayscale(num_output_channels=1))
 
-    if sliding_augmentation:
-        transform_list.append(RandomTimeWindow(time_window=time_window))
-    else:
-        transform_list.append(TimeWindow(time_window=time_window))
-
     if trivial_augmentation:
         trivial_transform_list = [
             transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
@@ -38,6 +33,11 @@ def return_data(args):
         transform_list.append(transforms.RandomChoice(trivial_transform_list))
 
     transform_list.append(transforms.ToTensor())
+
+    if sliding_augmentation:
+        transform_list.append(RandomTimeWindow(time_window=time_window))
+    else:
+        transform_list.append(TimeWindow(time_window=time_window))
 
     if args.channel == 1:
         transform_list.append(transforms.Normalize([0.5], [0.5]))
