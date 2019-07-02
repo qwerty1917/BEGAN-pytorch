@@ -43,7 +43,7 @@ def return_data(args):
         transform_list.append(transforms.Normalize([0.5], [0.5]))
     else:
         transform_list.append(transforms.Normalize([0.5] * args.channel, [0.5] * args.channel))
-
+    print(transform_list)
     transform = transforms.Compose(transform_list)
 
     # if args.channel == 1:
