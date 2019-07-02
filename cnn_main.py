@@ -58,8 +58,8 @@ if __name__ == "__main__":
     parser.add_argument('--test_dset_dir', default='data/onbody-conditional-4fold/fold1/test', type=str, help='test dataset directory')
     parser.add_argument('--num_workers', default=1, type=int, help='num_workers for data loader')
     parser.add_argument('--channel', default=3, type=int, help='input image channel')
-    parser.add_argument('--trivial_augmentation', default=False, type='bool', help='crop & zoom, bright, noise.')
-    parser.add_argument('--sliding_augmentation', default=False, type='bool', help='random slice augmentation.')
+    parser.add_argument('--trivial_augmentation', default=False, type=bool, help='crop & zoom, bright, noise.')
+    parser.add_argument('--sliding_augmentation', default=False, type=bool, help='random slice augmentation.')
 
     # Visualization
     parser.add_argument('--env_name', default='main', type=str, help='experiment name')
