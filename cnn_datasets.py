@@ -16,8 +16,8 @@ def return_data(args):
     num_workers = args.num_workers
     image_size = args.image_size
     time_window = args.time_window
-    trivial_augmentation = args.trivial_augmentation
-    sliding_augmentation = args.sliding_augmentation
+    trivial_augmentation = bool(args.trivial_augmentation)
+    sliding_augmentation = bool(args.sliding_augmentation)
 
     transform_list = [transforms.Resize((image_size, image_size))]
 
