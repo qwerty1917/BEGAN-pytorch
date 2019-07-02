@@ -32,12 +32,12 @@ def return_data(args):
         ]
         transform_list.append(transforms.RandomChoice(trivial_transform_list))
 
-    transform_list.append(transforms.ToTensor())
-
     if sliding_augmentation:
         transform_list.append(RandomTimeWindow(time_window=time_window))
     else:
         transform_list.append(TimeWindow(time_window=time_window))
+
+    transform_list.append(transforms.ToTensor())
 
     if args.channel == 1:
         transform_list.append(transforms.Normalize([0.5], [0.5]))
